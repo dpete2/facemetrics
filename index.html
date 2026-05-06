@@ -84,93 +84,67 @@
   <header class="top-bar">
     <div class="brand-block">
       <span class="brand-main">MOGGEDNYC</span>
-      <span class="brand-sub">CRANIOFACIAL PROPORTION ENGINE</span>
+      <span class="brand-sub">Facial proportion analysis · on-device</span>
     </div>
     <div class="top-meta">
-      <span class="live-badge" title="Runtime active in this tab"><span class="live-dot" aria-hidden="true"></span> LIVE</span>
-      <p class="meta-line">MOGGEDNYC V1.0 // LANDMARK MESH 68PT // CLIENT-SIDE PIPELINE // NO UPLINK</p>
+      <div class="top-meta-row">
+        <span class="tier-pill hidden" id="header-tier-pill" title="Harmony tier (heuristic)">
+          <span class="tier-pill-label" id="header-tier-acronym">—</span>
+        </span>
+      </div>
+      <p class="meta-line">68-point mesh · client-side · no photo upload</p>
     </div>
   </header>
 
-  <main class="shell">
-    <section class="hero-stack">
-      <div class="frame frame--protocol">
-        <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
-        <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
-        <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
-        <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+  <nav class="tab-bar" role="tablist" aria-label="Sections">
+    <button type="button" class="tab-btn is-active" role="tab" aria-selected="true" id="tab-btn-overview" data-tab="overview">Overview</button>
+    <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-scan" data-tab="scan">Scan</button>
+    <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-results" data-tab="results">Results</button>
+    <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-appeal" data-tab="appeal">Appeal</button>
+  </nav>
 
-        <h2 class="protocol-title">Computational craniofacial morphometry</h2>
+  <main class="shell shell--tabs">
+    <div id="tab-panel-overview" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-btn-overview">
+      <section class="overview-card frame">
+        <h2 class="protocol-title">Proportion analysis</h2>
         <p class="protocol-desc">
-          Derives twelve classical proportion indices from a 68-point facial mesh: vertical thirds, golden-ratio span,
-          interocular harmony, nasolabial segments, gonial vectors, bilateral symmetry residuals, and zygomatic–gonial breadth
-          ratio versus reference ideals. Output is descriptive morphometry only.
+          Front-facing photo → landmarks → harmony score and illustrative tier (Chad / CL / HTN / MTN / LTN).
+          Educational only; not medical and not population percentiles.
         </p>
-      </div>
+        <p class="privacy-strip">Image never leaves your device.</p>
 
-      <div class="frame frame--procedure">
-        <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
-        <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
-        <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
-        <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+        <div class="cta-stack cta-stack--overview">
+          <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — choose image">
+            <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polygon points="8,5 19,12 8,19" fill="currentColor" stroke="none"/>
+            </svg>
+            <span>Begin analysis</span>
+          </button>
 
-        <p class="procedure-label">Procedure</p>
-        <ol class="procedure-list">
-          <li><span class="proc-num">01</span> Frame face frontally; neutral expression; diffuse lighting.</li>
-          <li><span class="proc-num">02</span> Specify acquisition: library file, device capture, or live feed (localhost).</li>
-          <li><span class="proc-num">03</span> Mesh extraction and ratio quantization versus classical baselines.</li>
-          <li><span class="proc-num">04</span> Symmetry raster synthesis and harmony composite weighting.</li>
-          <li><span class="proc-num">05</span> Review dossier: radar breakdown, corpus heatmap, per-index deviation.</li>
-        </ol>
-        <p class="privacy-strip">Image never leaves your device. All tensors resolved in-browser.</p>
-      </div>
+          <div class="cta-row">
+            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-upload-lib">
+              Upload photo
+            </button>
+            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-view-dossier" data-go-tab="results">
+              Results
+            </button>
+            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-corpus-heatmap" data-go-tab="results">
+              Charts
+            </button>
+            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-appeal" data-go-tab="appeal">
+              Appeal
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
 
-      <div class="cta-stack">
-        <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — choose image">
-          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <polygon points="8,5 19,12 8,19" fill="currentColor" stroke="none"/>
-          </svg>
-          <span>BEGIN ANALYSIS</span>
-          <svg class="btn-icon btn-icon--sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M9 10l-4 4 4 4M5 14h11a4 4 0 010 8H9"/>
-          </svg>
-        </button>
-
-        <button type="button" class="btn btn-outline-cta" id="btn-upload-lib">
-          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M12 5v14M5 12l7-7 7 7"/>
-          </svg>
-          <span>UPLOAD FROM LIBRARY</span>
-        </button>
-
-        <button type="button" class="btn btn-outline-cta" id="btn-view-dossier">
-          <span>VIEW DOSSIER</span>
-          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
-        </button>
-
-        <button type="button" class="btn btn-outline-cta" id="btn-corpus-heatmap">
-          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M3 12h18M12 3a16 16 0 000 18"/>
-          </svg>
-          <span>CORPUS HEATMAP</span>
-        </button>
-
-        <button type="button" class="btn btn-outline-cta" id="btn-appeal">
-          <span>APPEAL SCORE</span>
-          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M12 21s-7-4.4-9-9a5.2 5.2 0 019-5 5.2 5.2 0 019 5c-2 4.6-9 9-9 9z"/>
-          </svg>
-        </button>
-      </div>
-    </section>
-
+    <div id="tab-panel-scan" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-scan" hidden>
+      <div class="scan-split">
     <section class="panel panel-input frame-minor" aria-labelledby="input-title" id="section-acquire">
       <h2 id="input-title" class="panel-label">Acquisition channel</h2>
 
-      <p class="mobile-hint">Tap the box or use <strong>Photo</strong> / <strong>Selfie</strong> in the bar below on phones.</p>
+      <p class="mobile-hint">Use <strong>Home</strong> / <strong>Scan</strong> / <strong>Results</strong> in the bar below on phones, or the tabs on larger screens.</p>
 
       <div
         id="dropzone"
@@ -220,7 +194,10 @@
         </div>
       </div>
     </section>
+      </div>
+    </div>
 
+    <div id="tab-panel-results" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-results" hidden>
     <section class="panel panel-score frame-minor" id="harmony-panel" aria-live="polite">
       <h2 class="panel-label">Harmony composite</h2>
       <div class="harmony">
@@ -249,11 +226,33 @@
           <p class="harmony-tier-note" id="harmony-tier-note"></p>
         </div>
         <p class="harmony-caption">
-          Weighted aggregate versus classical proportion baselines. Illustrative tier bands—not diagnostic or percentile truth.
+          Tier from your harmony score: <strong>LTN</strong> &lt;50 · <strong>MTN</strong> 50–79 · <strong>HTN</strong> ≥80 · <strong>CL</strong> 88–93 · <strong>Chad</strong> ≥94 (heuristic, not literal percentiles).
         </p>
       </div>
     </section>
 
+    <section class="panel panel-charts frame-minor">
+      <h2 class="panel-label">Telemetry</h2>
+      <div class="charts-row">
+        <div class="chart-box">
+          <p class="chart-eyebrow">Radar — index deviation</p>
+          <canvas id="radar-chart" aria-label="Radar chart comparing your ratios to ideals"></canvas>
+        </div>
+        <div class="chart-box chart-box-heatmap" id="section-heatmap">
+          <p class="chart-eyebrow">Corpus heatmap</p>
+          <p class="chart-caption">Bright: lower mirror residual. Dark: higher asymmetry signal.</p>
+          <canvas id="heatmap-canvas" class="heatmap"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-metrics frame-minor" id="section-dossier" aria-labelledby="metrics-title">
+      <h2 id="metrics-title" class="panel-label">Dossier — per-index readout</h2>
+      <div id="metrics-grid" class="metrics-grid"></div>
+    </section>
+    </div>
+
+    <div id="tab-panel-appeal" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-appeal" hidden>
     <section class="panel frame-minor appeal-panel" id="section-appeal" aria-labelledby="appeal-title">
       <h2 id="appeal-title" class="panel-label">Appeal (experimental)</h2>
       <div class="appeal-top">
@@ -299,35 +298,15 @@
         </div>
       </details>
     </section>
+    </div>
 
-    <section class="panel panel-charts frame-minor">
-      <h2 class="panel-label">Telemetry</h2>
-      <div class="charts-row">
-        <div class="chart-box">
-          <p class="chart-eyebrow">Radar — index deviation</p>
-          <canvas id="radar-chart" aria-label="Radar chart comparing your ratios to ideals"></canvas>
-        </div>
-        <div class="chart-box chart-box-heatmap" id="section-heatmap">
-          <p class="chart-eyebrow">Corpus heatmap</p>
-          <p class="chart-caption">Bright: lower mirror residual. Dark: higher asymmetry signal.</p>
-          <canvas id="heatmap-canvas" class="heatmap"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel panel-metrics frame-minor" id="section-dossier" aria-labelledby="metrics-title">
-      <h2 id="metrics-title" class="panel-label">Dossier — per-index readout</h2>
-      <div id="metrics-grid" class="metrics-grid"></div>
-    </section>
-
-    <!-- AI assistant removed -->
   </main>
 
-  <nav class="mobile-dock" id="mobile-dock" aria-label="Quick actions">
-    <button type="button" class="mobile-dock-btn" id="dock-photo" aria-label="Choose photo from library">Library</button>
-    <button type="button" class="mobile-dock-btn" id="dock-selfie" aria-label="Take a photo with camera">Selfie</button>
-    <button type="button" class="mobile-dock-btn" id="dock-results" aria-label="Jump to results">Results</button>
-    <button type="button" class="mobile-dock-btn" id="dock-appeal" aria-label="Jump to appeal">Appeal</button>
+  <nav class="mobile-dock" id="mobile-dock" aria-label="Sections">
+    <button type="button" class="mobile-dock-btn is-active" id="dock-overview" data-tab="overview" aria-label="Overview tab">Home</button>
+    <button type="button" class="mobile-dock-btn" id="dock-scan" data-tab="scan" aria-label="Scan tab">Scan</button>
+    <button type="button" class="mobile-dock-btn" id="dock-results" data-tab="results" aria-label="Results tab">Results</button>
+    <button type="button" class="mobile-dock-btn" id="dock-appeal" data-tab="appeal" aria-label="Appeal tab">Appeal</button>
   </nav>
 
   <footer class="footer">

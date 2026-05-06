@@ -35,6 +35,8 @@
     harmonyTierAcronym: $("#harmony-tier-acronym"),
     harmonyTierTitle: $("#harmony-tier-title"),
     harmonyTierNote: $("#harmony-tier-note"),
+    headerTierPill: $("#header-tier-pill"),
+    headerTierAcronym: $("#header-tier-acronym"),
     ringProgress: $("#ring-progress"),
     metricsGrid: $("#metrics-grid"),
     heatmapCanvas: $("#heatmap-canvas"),
@@ -42,11 +44,6 @@
     // AI assistant removed
     harmonyPanel: $("#harmony-panel"),
     mobileDock: $("#mobile-dock"),
-    dockPhoto: $("#dock-photo"),
-    dockSelfie: $("#dock-selfie"),
-    // AI assistant removed
-    dockResults: $("#dock-results"),
-    dockAppeal: $("#dock-appeal"),
     btnAppeal: $("#btn-appeal"),
     sectionAppeal: $("#section-appeal"),
     appealScore: $("#appeal-score"),
@@ -64,6 +61,34 @@
     scanPct: $("#scan-pct"),
     scanLeft: $("#scan-left"),
   };
+
+  const TAB_ORDER = ["overview", "scan", "results", "appeal"];
+
+  function setActiveTab(name) {
+    if (!TAB_ORDER.includes(name)) return;
+    TAB_ORDER.forEach((t) => {
+      const on = t === name;
+      const tabBtn = document.querySelector(`button.tab-btn[data-tab="${t}"]`);
+      if (tabBtn) {
+        tabBtn.classList.toggle("is-active", on);
+        tabBtn.setAttribute("aria-selected", String(on));
+      }
+      const panel = document.getElementById(`tab-panel-${t}`);
+      if (panel) {
+        panel.classList.toggle("is-active", on);
+        if (on) {
+          panel.removeAttribute("hidden");
+          panel.setAttribute("aria-hidden", "false");
+        } else {
+          panel.setAttribute("hidden", "");
+          panel.setAttribute("aria-hidden", "true");
+        }
+      }
+      const dockBtn = els.mobileDock && els.mobileDock.querySelector(`button[data-tab="${t}"]`);
+      if (dockBtn) dockBtn.classList.toggle("is-active", on);
+    });
+    window.scrollTo(0, 0);
+  }
 
   // AI assistant removed
 
@@ -863,7 +888,7 @@
     const a = metrics.appeal;
     if (els.appealScore) els.appealScore.textContent = String(a.score);
     if (els.appealTier) {
-      const t = tierFromHarmonyScore(a.score);
+      const t = tierFromHarmonyScore(metrics.harmony);
       if (t) {
         els.appealTier.hidden = false;
         els.appealTier.textContent = `Tier (${t.acronym}): ${t.title}.`;
@@ -1011,11 +1036,13 @@
     lastMetrics = metrics;
     // AI assistant removed
     renderAppeal(metrics);
-    setStatus("Analysis complete — results below.");
+    setStatus("Analysis complete — open Results tab.");
+    setActiveTab("results");
     hideScan(true);
   }
 
   function loadImageFromFile(file) {
+    setActiveTab("scan");
     showScan("INGEST", "Buffering image…");
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -1095,10 +1122,6 @@
     cv.style.height = "100%";
   }
 
-  function scrollToSection(el) {
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
   /**
    * Map Harmony score (0–100) to illustrative tier bands informed by tier-list style tables.
    * Not population percentiles—not clinical—and the bottom bracket uses LTN wording only (no harsh labels).
@@ -1143,17 +1166,29 @@
   }
 
   function renderHarmonyTier(score) {
-    if (!els.harmonyTier) return;
     const t = tierFromHarmonyScore(score);
     if (!t) {
-      els.harmonyTier.classList.add("hidden");
+      if (els.harmonyTier) els.harmonyTier.classList.add("hidden");
+      if (els.headerTierPill) {
+        els.headerTierPill.classList.add("hidden");
+        delete els.headerTierPill.dataset.tierKey;
+      }
+      if (els.headerTierAcronym) els.headerTierAcronym.textContent = "—";
       return;
     }
-    els.harmonyTier.classList.remove("hidden");
-    els.harmonyTier.dataset.tierKey = t.key;
-    if (els.harmonyTierAcronym) els.harmonyTierAcronym.textContent = t.acronym;
-    if (els.harmonyTierTitle) els.harmonyTierTitle.textContent = t.title;
-    if (els.harmonyTierNote) els.harmonyTierNote.textContent = t.note;
+    if (els.harmonyTier) {
+      els.harmonyTier.classList.remove("hidden");
+      els.harmonyTier.dataset.tierKey = t.key;
+      if (els.harmonyTierAcronym) els.harmonyTierAcronym.textContent = t.acronym;
+      if (els.harmonyTierTitle) els.harmonyTierTitle.textContent = t.title;
+      if (els.harmonyTierNote) els.harmonyTierNote.textContent = t.note;
+    }
+    if (els.headerTierPill && els.headerTierAcronym) {
+      els.headerTierPill.classList.remove("hidden");
+      els.headerTierPill.dataset.tierKey = t.key;
+      els.headerTierAcronym.textContent = t.acronym;
+      els.headerTierPill.title = `${t.title} — ${t.note}`;
+    }
   }
 
   // AI assistant removed
@@ -1172,11 +1207,35 @@
     document.body.style.overflow = "";
   }
 
-  if (els.btnBegin) els.btnBegin.addEventListener("click", showAcquire);
-  if (els.btnUploadLib) els.btnUploadLib.addEventListener("click", () => els.fileInput.click());
-  if (els.btnViewDossier) els.btnViewDossier.addEventListener("click", () => scrollToSection(els.sectionDossier));
-  if (els.btnCorpusHeatmap) els.btnCorpusHeatmap.addEventListener("click", () => scrollToSection(els.sectionHeatmap));
-  if (els.btnAppeal) els.btnAppeal.addEventListener("click", () => scrollToSection(els.sectionAppeal));
+  document.querySelectorAll("button.tab-btn[data-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => setActiveTab(btn.getAttribute("data-tab")));
+  });
+  document.querySelectorAll("[data-go-tab]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const tab = el.getAttribute("data-go-tab");
+      if (tab) setActiveTab(tab);
+    });
+  });
+  if (els.mobileDock) {
+    els.mobileDock.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-tab]");
+      if (b) setActiveTab(b.getAttribute("data-tab"));
+    });
+  }
+
+  if (els.btnBegin) {
+    els.btnBegin.addEventListener("click", () => {
+      setActiveTab("scan");
+      showAcquire();
+    });
+  }
+  if (els.btnUploadLib) {
+    els.btnUploadLib.addEventListener("click", (e) => {
+      e.preventDefault();
+      setActiveTab("scan");
+      els.fileInput.click();
+    });
+  }
 
   els.dropzone.addEventListener("click", () => els.fileInput.click());
   els.dropzone.addEventListener("keydown", (e) => {
@@ -1252,7 +1311,7 @@
   if (acquire.webcam) {
     acquire.webcam.addEventListener("click", () => {
       hideAcquire();
-      scrollToSection(document.getElementById("section-acquire"));
+      setActiveTab("scan");
       startWebcam();
     });
   }
@@ -1273,6 +1332,11 @@
     els.btnClear.disabled = true;
     lastMetrics = null;
     if (els.harmonyTier) els.harmonyTier.classList.add("hidden");
+    if (els.headerTierPill) {
+      els.headerTierPill.classList.add("hidden");
+      delete els.headerTierPill.dataset.tierKey;
+    }
+    if (els.headerTierAcronym) els.headerTierAcronym.textContent = "—";
     if (els.appealTier) {
       els.appealTier.hidden = true;
       els.appealTier.textContent = "";
