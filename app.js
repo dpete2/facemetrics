@@ -24,7 +24,6 @@
     captureSession: $("#capture-session"),
     captureSessionVideo: $("#capture-session-video"),
     captureSessionMsg: $("#capture-session-msg"),
-    captureFacingLabel: $("#capture-facing-label"),
     captureShutter: $("#capture-shutter"),
     captureFlip: $("#capture-flip"),
     captureSessionUpload: $("#capture-session-upload"),
@@ -992,11 +991,11 @@
   async function ensureModels() {
     if (modelsLoaded) return;
     showScan("MODEL LOAD", "Loading face models (one-time)…");
-    setStatus("Loading face models (one-time)…");
+    setStatus("Loading models…");
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
     modelsLoaded = true;
-    setStatus("Models ready. Add a photo.");
+    setStatus("Ready.");
   }
 
   async function analyzeImage(img) {
@@ -1009,7 +1008,7 @@
       .withFaceLandmarks();
 
     if (!det) {
-      setStatus("No face detected. Try a clearer, front-facing photo.", true);
+      setStatus("No face found — try clearer, straight-on framing.", true);
       hideScan(false);
       return;
     }
@@ -1041,7 +1040,7 @@
     lastMetrics = metrics;
     // AI assistant removed
     renderAppeal(metrics);
-    setStatus("Analysis complete — open Results tab.");
+    setStatus("Done — see Results.");
     setActiveTab("results");
     hideScan(true);
   }
@@ -1067,9 +1066,10 @@
     if (els.captureSessionMsg) els.captureSessionMsg.textContent = text || "";
   }
 
-  function updateCaptureFacingLabel() {
-    if (!els.captureFacingLabel) return;
-    els.captureFacingLabel.textContent = captureFacingUser ? "FRONT/USER" : "BACK/ENV";
+  /** Front-facing streams usually look mirrored — un-mirror the preview only (analysis flips separately). */
+  function syncCapturePreviewMirror() {
+    if (!els.captureSessionVideo) return;
+    els.captureSessionVideo.classList.toggle("capture-session-video--unmirror-preview", captureFacingUser);
   }
 
   function stopMediaTracks() {
@@ -1077,13 +1077,16 @@
       streamRef.getTracks().forEach((t) => t.stop());
       streamRef = null;
     }
-    if (els.captureSessionVideo) els.captureSessionVideo.srcObject = null;
+    if (els.captureSessionVideo) {
+      els.captureSessionVideo.srcObject = null;
+      els.captureSessionVideo.classList.remove("capture-session-video--unmirror-preview");
+    }
   }
 
   async function startCaptureSessionStream() {
     stopMediaTracks();
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setCaptureMsg("NO LIVE FEED IN THIS BROWSER — USE UPLOAD OR TAKE A SELFIE");
+      setCaptureMsg("No camera here — try Files.");
       return false;
     }
     try {
@@ -1095,8 +1098,8 @@
         audio: false,
       });
       els.captureSessionVideo.srcObject = streamRef;
+      syncCapturePreviewMirror();
       setCaptureMsg("");
-      updateCaptureFacingLabel();
       setStatus("");
       return true;
     } catch (e) {
@@ -1105,12 +1108,11 @@
         !window.isSecureContext &&
         location.hostname !== "localhost" &&
         location.hostname !== "127.0.0.1";
-      let suffix = "USE UPLOAD OR TAKE A SELFIE";
-      if (blockedOnHttpPhone) suffix = "NEED HTTPS ON PHONE · USE UPLOAD";
-      else if (e && (e.name === "NotAllowedError" || e.name === "PermissionDeniedError"))
-        suffix = "ALLOW CAMERA OR USE UPLOAD";
-      else if (e && e.name === "NotFoundError") suffix = "NO CAMERA FOUND · USE UPLOAD";
-      setCaptureMsg(`CAMERA UNAVAILABLE — ${suffix}`);
+      let suffix = "Try Files or Selfie.";
+      if (blockedOnHttpPhone) suffix = "Use https or Files.";
+      else if (e && (e.name === "NotAllowedError" || e.name === "PermissionDeniedError")) suffix = "Allow camera or use Files.";
+      else if (e && e.name === "NotFoundError") suffix = "No camera · use Files.";
+      setCaptureMsg(`Camera unavailable — ${suffix}`);
       return false;
     }
   }
@@ -1119,8 +1121,7 @@
     if (!els.captureSession) return;
     els.captureSession.classList.remove("hidden");
     document.body.style.overflow = "hidden";
-    setCaptureMsg("STARTING LIVE FEED…");
-    updateCaptureFacingLabel();
+    setCaptureMsg("");
     startCaptureSessionStream();
   }
 
@@ -1138,13 +1139,18 @@
   function captureSessionFrame() {
     const video = els.captureSessionVideo;
     if (!video || !video.videoWidth) {
-      setCaptureMsg("WAIT FOR FEED — THEN TAP SHUTTER");
+      setCaptureMsg("Wait for preview, then capture.");
       return;
     }
     const c = document.createElement("canvas");
     c.width = video.videoWidth;
     c.height = video.videoHeight;
-    c.getContext("2d").drawImage(video, 0, 0);
+    const ctx = c.getContext("2d");
+    if (captureFacingUser) {
+      ctx.translate(c.width, 0);
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(video, 0, 0, c.width, c.height);
     const dataUrl = c.toDataURL("image/jpeg", 0.92);
     closeCaptureSession();
     const img = new Image();
@@ -1154,7 +1160,6 @@
 
   async function flipCaptureCamera() {
     captureFacingUser = !captureFacingUser;
-    updateCaptureFacingLabel();
     await startCaptureSessionStream();
   }
 
@@ -1365,5 +1370,5 @@
     hideScan(false);
   });
 
-  setStatus("Awaiting ingress — load models on first specimen.");
+  setStatus("");
 })();

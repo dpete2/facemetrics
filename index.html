@@ -21,46 +21,34 @@
 <body>
   <div id="wrong-server-banner" class="wrong-server-banner hidden" role="alert"></div>
 
-  <div id="capture-session" class="capture-session hidden" role="dialog" aria-modal="true" aria-label="Live feed — take a photo">
+  <div id="capture-session" class="capture-session hidden" role="dialog" aria-modal="true" aria-label="Capture">
     <div class="capture-session-bg" aria-hidden="true"></div>
+    <button type="button" class="capture-dismiss" id="capture-session-cancel" aria-label="Close">×</button>
     <div class="capture-session-inner">
-      <div class="capture-viewport">
-        <video id="capture-session-video" class="capture-session-video" autoplay playsinline muted></video>
-        <div class="capture-viewport-overlays" aria-hidden="true">
-          <div class="capture-rules">
-            <span class="capture-rule capture-rule--v capture-rule--v1"></span>
-            <span class="capture-rule capture-rule--v capture-rule--v2"></span>
-            <span class="capture-rule capture-rule--h capture-rule--h1"></span>
-            <span class="capture-rule capture-rule--h capture-rule--h2"></span>
-          </div>
-          <div class="capture-face-ellipse"></div>
-          <span class="capture-bracket capture-bracket--tl"></span>
-          <span class="capture-bracket capture-bracket--tr"></span>
-          <span class="capture-bracket capture-bracket--bl"></span>
-          <span class="capture-bracket capture-bracket--br"></span>
-          <span class="capture-label capture-label--live">// LIVE FEED</span>
-          <span class="capture-label capture-label--facing" id="capture-facing-label">FRONT/USER</span>
-          <span class="capture-label capture-label--ready">READY</span>
-          <span class="capture-label capture-label--hint">CENTER FACE WITHIN ELLIPSE</span>
+      <p class="capture-lede">Line up straight-on, then tap the shutter.</p>
+      <div class="capture-viewport-shell">
+        <div class="capture-viewport">
+          <video id="capture-session-video" class="capture-session-video" autoplay playsinline muted></video>
         </div>
       </div>
-      <p class="capture-session-msg" id="capture-session-msg" role="status"></p>
-      <div class="capture-controls">
-        <button type="button" class="capture-side-btn" id="capture-flip" aria-label="Flip camera">
-          <svg class="capture-side-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <div class="capture-toolbar">
+        <button type="button" class="capture-chip" id="capture-flip" aria-label="Switch camera">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
             <path d="M4 9V5h4M20 15v4h-4M5 19A9 9 0 0 0 18.32 5.5M19 5A9 9 0 0 0 5.68 18.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>FLIP</span>
+          Flip
         </button>
-        <button type="button" class="capture-shutter" id="capture-shutter" aria-label="Take picture"></button>
-        <button type="button" class="capture-side-btn" id="capture-session-upload" aria-label="Upload a photo from files">
-          <svg class="capture-side-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-            <path d="M12 5v12M8 9l4-4 4 4M5 19h14" stroke-linecap="round" stroke-linejoin="round"/>
+        <button type="button" class="capture-shutter" id="capture-shutter" aria-label="Capture photo">
+          <span class="capture-shutter-inner"></span>
+        </button>
+        <button type="button" class="capture-chip" id="capture-session-upload" aria-label="Pick a file">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M12 16V7m0 0l-4 4m4-4l4 4M5 20h14" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>UPLOAD</span>
+          Files
         </button>
       </div>
-      <button type="button" class="capture-cancel-btn" id="capture-session-cancel">← CANCEL</button>
+      <p class="capture-session-msg" id="capture-session-msg" role="status"></p>
     </div>
   </div>
 
@@ -88,7 +76,7 @@
         <div class="scan-bracket scan-bracket--br"></div>
       </div>
 
-      <p class="scan-foot">Image stays on-device. No upload. Press ESC to cancel overlay.</p>
+      <p class="scan-foot">On-device · Esc to dismiss</p>
     </div>
   </div>
   <div class="grid-bg" aria-hidden="true"></div>
@@ -104,7 +92,7 @@
           <span class="tier-pill-label" id="header-tier-acronym">—</span>
         </span>
       </div>
-      <p class="meta-line">68-point mesh · client-side · no photo upload</p>
+      <p class="meta-line">68-point mesh · on-device only</p>
     </div>
   </header>
 
@@ -120,10 +108,10 @@
       <section class="overview-card frame">
         <h2 class="protocol-title">Proportion analysis</h2>
         <p class="protocol-desc">
-          <strong>Begin analysis</strong> opens a full-screen <strong>live feed</strong> to snap a shot. Library photos and file upload live on the <strong>Scan</strong> tab.
-          Then: landmarks → harmony score and illustrative tier (Chad / CL / HTN / MTN / LTN). Educational only; not medical or population percentiles.
+          <strong>Begin</strong> opens the camera preview. Photos and uploads are on <strong>Scan</strong>.
+          Landmark mesh → harmony + tier bands (LTN–Chad heuristic). Educational.
         </p>
-        <p class="privacy-strip">Image never leaves your device.</p>
+        <p class="privacy-strip">Stays on this device.</p>
 
         <div class="cta-stack cta-stack--overview">
           <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — open live feed to take a photo">
@@ -151,42 +139,42 @@
     <div id="tab-panel-scan" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-scan" hidden>
       <div class="scan-split">
     <section class="panel panel-input frame-minor" aria-labelledby="input-title" id="section-acquire">
-      <h2 id="input-title" class="panel-label">Acquisition channel</h2>
+      <h2 id="input-title" class="panel-label">Add a photo</h2>
 
-      <p class="mobile-hint">Use <strong>Home</strong> / <strong>Scan</strong> / <strong>Results</strong> in the bar below on phones, or the tabs on larger screens.</p>
+      <p class="mobile-hint">Bottom bar: Home · Scan · Results · Appeal.</p>
 
       <div
         id="dropzone"
         class="dropzone"
         tabindex="0"
         role="button"
-        aria-label="Drop an image or click to choose file"
+        aria-label="Choose image file"
       >
         <input type="file" id="file-input" accept="image/*" hidden />
         <input type="file" id="camera-capture-input" accept="image/*" capture="user" hidden />
         <div class="dropzone-inner">
           <div class="drop-mark" aria-hidden="true">+</div>
-          <p class="drop-title">Ingress buffer — front-facing raster</p>
-          <p class="hint desktop-hint">Or <strong>Take a selfie</strong> (device camera app) · <strong>Upload photo</strong> · open <strong>live feed</strong> below.</p>
-          <p class="hint mobile-only-hint"><strong>Take a selfie</strong>, <strong>Upload photo</strong>, or <strong>live feed</strong> below — or tap to browse files.</p>
+          <p class="drop-title">Browse or drop an image</p>
+          <p class="hint desktop-hint">Or use the buttons.</p>
+          <p class="hint mobile-only-hint">Tap above or use buttons.</p>
         </div>
       </div>
 
       <div class="actions">
-        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-take-photo">Take a selfie</button>
-        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-upload-photo">Upload photo</button>
-        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-live-feed">// LIVE FEED</button>
-        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-clear" disabled>CLEAR BUFFER</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-take-photo">Selfie</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-upload-photo">Upload</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-live-feed">Live preview</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-clear" disabled>Clear</button>
       </div>
 
       <p id="status" class="status" role="status"></p>
     </section>
 
     <section class="panel panel-visual frame-minor" aria-labelledby="visual-title">
-      <h2 id="visual-title" class="panel-label">Mesh overlay</h2>
+      <h2 id="visual-title" class="panel-label">Preview</h2>
       <div class="visual-wrap">
         <div id="placeholder" class="placeholder">
-          <p>Awaiting specimen. Use acquisition channel above.</p>
+          <p>No image yet.</p>
         </div>
         <div id="result-wrap" class="result-wrap hidden">
           <div class="image-stage">
@@ -201,7 +189,7 @@
 
     <div id="tab-panel-results" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-results" hidden>
     <section class="panel panel-score frame-minor" id="harmony-panel" aria-live="polite">
-      <h2 class="panel-label">Harmony composite</h2>
+      <h2 class="panel-label">Harmony</h2>
       <div class="harmony">
         <div class="harmony-ring" id="harmony-ring">
           <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
@@ -228,49 +216,47 @@
           <p class="harmony-tier-note" id="harmony-tier-note"></p>
         </div>
         <p class="harmony-caption">
-          Tier from your harmony score: <strong>LTN</strong> &lt;50 · <strong>MTN</strong> 50–79 · <strong>HTN</strong> ≥80 · <strong>CL</strong> 88–93 · <strong>Chad</strong> ≥94 (heuristic, not literal percentiles).
+          Bands (harmony score): LTN &lt;50 · MTN 50–79 · HTN ≥80 · CL 88–93 · Chad ≥94 · illustrative only.
         </p>
       </div>
     </section>
 
     <section class="panel panel-charts frame-minor">
-      <h2 class="panel-label">Telemetry</h2>
+      <h2 class="panel-label">Charts</h2>
       <div class="charts-row">
         <div class="chart-box">
-          <p class="chart-eyebrow">Radar — index deviation</p>
+          <p class="chart-eyebrow">Radar</p>
           <canvas id="radar-chart" aria-label="Radar chart comparing your ratios to ideals"></canvas>
         </div>
         <div class="chart-box chart-box-heatmap" id="section-heatmap">
-          <p class="chart-eyebrow">Corpus heatmap</p>
-          <p class="chart-caption">Bright: lower mirror residual. Dark: higher asymmetry signal.</p>
+          <p class="chart-eyebrow">Heatmap</p>
+          <p class="chart-caption">Residual asymmetry (brighter → closer to mirror).</p>
           <canvas id="heatmap-canvas" class="heatmap"></canvas>
         </div>
       </div>
     </section>
 
     <section class="panel panel-metrics frame-minor" id="section-dossier" aria-labelledby="metrics-title">
-      <h2 id="metrics-title" class="panel-label">Dossier — per-index readout</h2>
+      <h2 id="metrics-title" class="panel-label">Metrics</h2>
       <div id="metrics-grid" class="metrics-grid"></div>
     </section>
     </div>
 
     <div id="tab-panel-appeal" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-appeal" hidden>
     <section class="panel frame-minor appeal-panel" id="section-appeal" aria-labelledby="appeal-title">
-      <h2 id="appeal-title" class="panel-label">Appeal (experimental)</h2>
+      <h2 id="appeal-title" class="panel-label">Appeal</h2>
       <div class="appeal-top">
         <div class="appeal-scorebox">
           <p class="appeal-label">Appeal score</p>
           <p class="appeal-score"><span id="appeal-score">—</span><span class="appeal-outof">/ 100</span></p>
-          <p class="appeal-disclaimer">
-            Heuristic estimate from a single photo. Not a fact about how people will treat you.
-          </p>
+          <p class="appeal-disclaimer">One-photo heuristic only.</p>
           <p class="appeal-tier" id="appeal-tier" hidden></p>
         </div>
         <div class="appeal-meta">
           <p class="appeal-label">Confidence</p>
           <p class="appeal-confidence" id="appeal-confidence">—</p>
           <ul class="appeal-warnings" id="appeal-warnings"></ul>
-          <p class="appeal-tips-title">To get a cleaner reading</p>
+          <p class="appeal-tips-title">Tips</p>
           <ul class="appeal-tips" id="appeal-tips"></ul>
         </div>
       </div>
@@ -287,10 +273,10 @@
       </div>
 
       <details class="appeal-details">
-        <summary>How we score (transparent)</summary>
+        <summary>Scoring</summary>
         <div class="appeal-details-body">
           <p class="appeal-details-text">
-            This uses a transparent weighted blend of symmetry + proportion/ratio cues. It does not use your photo outside this device.
+            Weighted blend of symmetry + proportion cues. Only on-device.
           </p>
           <pre class="appeal-weights" id="appeal-weights"></pre>
           <p class="appeal-details-text">
