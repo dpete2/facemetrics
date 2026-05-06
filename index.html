@@ -272,62 +272,12 @@
       <div id="metrics-grid" class="metrics-grid"></div>
     </section>
 
-    <section class="panel frame-minor marlon-panel" id="marlon-section" aria-labelledby="marlon-title">
-      <h2 id="marlon-title" class="marlon-title-user">Ask Clav</h2>
-      <div
-        id="marlon-mode-banner"
-        class="marlon-mode-banner marlon-mode-banner--local"
-        role="status"
-        aria-live="polite"
-      >
-        Checking which assistant is active…
-      </div>
-      <div class="marlon-mode-row">
-        <label class="marlon-mode-label" for="marlon-ai-mode">How Clav thinks</label>
-        <select id="marlon-ai-mode" class="marlon-select" aria-describedby="marlon-api-note">
-          <option value="local">On-device (free, private, works with any static server)</option>
-          <option value="claude">Claude Sonnet 4.5 (smarter replies — needs API key on server)</option>
-        </select>
-      </div>
-      <p class="marlon-api-note" id="marlon-api-note">
-        <strong>On-device:</strong> no API key, no network for chat — pattern-based answers only.
-        <strong> Claude:</strong> put your Anthropic key in the environment as <code>ANTHROPIC_API_KEY</code> and run
-        <code>npm start</code> from this folder (not plain Python). The browser never sees your key.
-      </p>
-      <p class="marlon-lede">
-        Questions about <strong>your scores</strong> in plain English — plus the math when you want it. On-device mode never sends data out;
-        Claude mode sends only your text + numeric summary to Anthropic’s API (still no image).
-      </p>
-      <p class="marlon-examples-intro">Tap to ask, or type anything below:</p>
-      <div class="marlon-starters" aria-label="Example questions">
-        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="Explain my results in plain English">Plain English summary</button>
-        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="How is harmony calculated?">How harmony works</button>
-        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="Explain the math behind the scores">The math explained</button>
-        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="How do I use moggednyc?">How to use this app</button>
-        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="Am I using Claude right now?">Am I using Claude?</button>
-      </div>
-      <div id="marlon-thread" class="marlon-thread" role="log" aria-live="polite" aria-relevant="additions"></div>
-      <p class="marlon-after-analysis hidden" id="marlon-after-label">After your run — quick picks:</p>
-      <div id="marlon-quick" class="marlon-quick" hidden></div>
-      <form id="marlon-form" class="marlon-form" autocomplete="off">
-        <label class="visually-hidden" for="marlon-input">Your question</label>
-        <input
-          type="text"
-          id="marlon-input"
-          class="marlon-input"
-          placeholder="Ask anything — e.g. Why is symmetry lower? What’s the golden ratio row?"
-          enterkeyhint="send"
-          inputmode="text"
-        />
-        <button type="submit" class="btn btn-primary-cta marlon-submit" id="marlon-submit">Ask Clav</button>
-      </form>
-    </section>
+    <!-- AI assistant removed -->
   </main>
 
   <nav class="mobile-dock" id="mobile-dock" aria-label="Quick actions">
     <button type="button" class="mobile-dock-btn" id="dock-photo" aria-label="Choose photo from library">Library</button>
     <button type="button" class="mobile-dock-btn" id="dock-selfie" aria-label="Take a photo with camera">Selfie</button>
-    <button type="button" class="mobile-dock-btn mobile-dock-btn--accent" id="dock-marlon" aria-label="Jump to Clav">Clav</button>
     <button type="button" class="mobile-dock-btn" id="dock-results" aria-label="Jump to results">Results</button>
     <button type="button" class="mobile-dock-btn" id="dock-appeal" aria-label="Jump to appeal">Appeal</button>
   </nav>
@@ -338,7 +288,6 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script defer src="./marlon.js"></script>
   <script defer src="./app.js"></script>
 </body>
 </html>

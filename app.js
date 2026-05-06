@@ -35,17 +35,12 @@
     metricsGrid: $("#metrics-grid"),
     heatmapCanvas: $("#heatmap-canvas"),
     radarChart: $("#radar-chart"),
-    marlonAiMode: $("#marlon-ai-mode"),
-    marlonModeBanner: $("#marlon-mode-banner"),
-    marlonThread: $("#marlon-thread"),
-    marlonForm: $("#marlon-form"),
-    marlonInput: $("#marlon-input"),
-    marlonQuick: $("#marlon-quick"),
+    // AI assistant removed
     harmonyPanel: $("#harmony-panel"),
     mobileDock: $("#mobile-dock"),
     dockPhoto: $("#dock-photo"),
     dockSelfie: $("#dock-selfie"),
-    dockMarlon: $("#dock-marlon"),
+    // AI assistant removed
     dockResults: $("#dock-results"),
     dockAppeal: $("#dock-appeal"),
     btnAppeal: $("#btn-appeal"),
@@ -65,14 +60,13 @@
     scanLeft: $("#scan-left"),
   };
 
-  const AI_MODE_KEY = "facemetrics_ai_mode";
+  // AI assistant removed
 
   let modelsLoaded = false;
   let streamRef = null;
   let radarChartInstance = null;
   let lastMetrics = null;
-  /** @type {{ role: string; content: string }[]} */
-  let claudeMessages = [];
+  // AI assistant removed
   let scanTimer = null;
   let scanPct = 0;
 
@@ -1000,8 +994,7 @@
     updateRadar(metrics);
     setHarmonyScore(metrics.harmony);
     lastMetrics = metrics;
-    claudeMessages = [];
-    renderMarlonQuick(metrics);
+    // AI assistant removed
     renderAppeal(metrics);
     setStatus("Analysis complete — results below.");
     hideScan(true);
@@ -1091,269 +1084,7 @@
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function getAiMode() {
-    if (els.marlonAiMode && els.marlonAiMode.value === "claude") return "claude";
-    return "local";
-  }
-
-  function getMarlonWelcomeText() {
-    if (getAiMode() === "claude") {
-      return (
-        "Hi — I'm Clav (Claude Sonnet 4.5).\n\n" +
-        "I'll answer using your moggednyc numbers when you've run an analysis. " +
-        "This mode needs the Node server: in the project folder run `npm start` after setting `ANTHROPIC_API_KEY` in the environment — the key stays on your machine, not in the browser.\n\n" +
-        "Ask anything about your scores, or switch to On-device if you're only using a simple file server."
-      );
-    }
-    return (
-      "Hi — I'm Clav.\n\n" +
-      "After you add a photo and get scores, ask me anything in everyday language: what harmony means, how each number is calculated, or for a simple summary. " +
-      "I only use the stats already on your screen — no cloud for chat in this mode.\n\n" +
-      "Tap a suggestion below, or type your own question."
-    );
-  }
-
-  async function updateMarlonModeBanner() {
-    const el = els.marlonModeBanner || document.getElementById("marlon-mode-banner");
-    if (!el) return;
-
-    if (getAiMode() === "local") {
-      el.className = "marlon-mode-banner marlon-mode-banner--local";
-      el.textContent =
-        "ACTIVE: Built-in Clav — not Claude. Replies are rule-based on your device (no Anthropic).";
-      return;
-    }
-
-    el.className = "marlon-mode-banner marlon-mode-banner--pending";
-    el.textContent = "ACTIVE: Claude Sonnet 4.5 selected — checking whether the server can reach Anthropic…";
-
-    try {
-      const r = await fetch("/api/health", { cache: "no-store" });
-      const j = await r.json().catch(() => ({}));
-      const curPort = location.port || (location.protocol === "https:" ? "443" : "80");
-      const listenPort = j.listenPort != null ? String(j.listenPort) : null;
-      if (listenPort && curPort !== listenPort && (location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
-        el.className = "marlon-mode-banner marlon-mode-banner--warn";
-        el.textContent = `Claude is running, but you're on the wrong port. Open http://localhost:${listenPort} (you are on :${curPort}).`;
-        return;
-      }
-      if (j.claude) {
-        el.className = "marlon-mode-banner marlon-mode-banner--claude";
-        el.textContent =
-          "ACTIVE: Claude Sonnet 4.5 is ON. Your messages go to Anthropic’s API (model claude-sonnet-4-5). Only text + score numbers are sent; no photo.";
-      } else {
-        el.className = "marlon-mode-banner marlon-mode-banner--warn";
-        el.textContent =
-          "Claude is selected, but the server says there is NO API key loaded. Put ANTHROPIC_API_KEY in .env, restart npm start, then refresh this page.";
-      }
-    } catch {
-      el.className = "marlon-mode-banner marlon-mode-banner--warn";
-      el.textContent =
-        "Claude is selected, but this site is being served without the Node proxy (e.g. python -m http.server). You are NOT talking to Claude. Run npm start from the project folder, or switch to Built-in Clav.";
-    }
-  }
-
-  function appendMarlonBubble(role, text) {
-    if (!els.marlonThread) return;
-    const row = document.createElement("div");
-    row.className = `marlon-msg marlon-msg--${role}`;
-    const p = document.createElement("p");
-    p.textContent = text;
-    row.appendChild(p);
-    els.marlonThread.appendChild(row);
-    row.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-
-  function resetMarlonThread() {
-    if (!els.marlonThread) return;
-    const afterLbl = document.getElementById("marlon-after-label");
-    if (afterLbl) afterLbl.classList.add("hidden");
-    els.marlonThread.innerHTML = "";
-    appendMarlonBubble("marlon", getMarlonWelcomeText());
-    if (els.marlonQuick) {
-      els.marlonQuick.hidden = true;
-      els.marlonQuick.innerHTML = "";
-    }
-  }
-
-  function renderMarlonQuick(metrics) {
-    if (!els.marlonQuick || !metrics) return;
-    const afterLbl = document.getElementById("marlon-after-label");
-    if (afterLbl) afterLbl.classList.remove("hidden");
-    els.marlonQuick.hidden = false;
-    els.marlonQuick.innerHTML = "";
-    const prompts = [
-      "Explain my results in plain English",
-      "How is harmony calculated?",
-      "Explain the math behind the scores",
-      "Summarize my scores simply",
-      "What's my weakest score and why?",
-      "How does the heatmap work?",
-      "Can I trust these numbers?",
-      "Tips for a clearer photo",
-    ];
-    prompts.forEach((t) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "marlon-chip";
-      b.textContent = t;
-      b.addEventListener("click", () => {
-        if (els.marlonInput) els.marlonInput.value = t;
-        submitMarlonQuery(t);
-      });
-      els.marlonQuick.appendChild(b);
-    });
-  }
-
-  function showMarlonLoading() {
-    if (!els.marlonThread) return null;
-    const row = document.createElement("div");
-    row.className = "marlon-msg marlon-msg--marlon marlon-msg--loading";
-    const p = document.createElement("p");
-    p.textContent = "Thinking…";
-    row.appendChild(p);
-    els.marlonThread.appendChild(row);
-    row.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    return row;
-  }
-
-  async function submitMarlonQuery(text) {
-    const q = (text || "").trim();
-    if (!q) return;
-    appendMarlonBubble("user", q);
-
-    if (getAiMode() === "claude") {
-      const loadEl = showMarlonLoading();
-      claudeMessages.push({ role: "user", content: q });
-      try {
-        const r = await fetch("/api/marlon", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: claudeMessages,
-            metrics: lastMetrics,
-          }),
-        });
-        const data = await r.json().catch(() => ({}));
-        if (loadEl) loadEl.remove();
-        if (!r.ok) {
-          claudeMessages.pop();
-          const extra = data.hint ? `\n\n${data.hint}` : "";
-          appendMarlonBubble(
-            "marlon",
-            (data.error || "Claude request failed.") +
-              extra +
-              "\n\nIf this is 401, your API key may be wrong or revoked — create a new key in the Anthropic console. Check the Terminal where npm is running for a detailed [Anthropic] log line.",
-          );
-          if (els.marlonInput) els.marlonInput.value = "";
-          return;
-        }
-        const reply = data.text || "";
-        claudeMessages.push({ role: "assistant", content: reply });
-        appendMarlonBubble("marlon", reply);
-      } catch {
-        if (loadEl) loadEl.remove();
-        claudeMessages.pop();
-        appendMarlonBubble(
-          "marlon",
-          "Can't reach /api/marlon · From the moggednyc folder run: npm start (after export ANTHROPIC_API_KEY=…). " +
-            "If you only use python -m http.server, that has no Claude proxy — use On-device Clav or switch to Node.",
-        );
-      }
-    } else {
-      if (!window.Clav || typeof window.Clav.answer !== "function") return;
-      let reply;
-      if (/are you claude|is this claude|which (ai|model|engine)|am i using claude|what model/i.test(q)) {
-        reply =
-          "Right now you’re using Built-in Clav, not Claude. I run entirely in your browser from fixed rules + your score numbers.\n\n" +
-          "To use real Claude (Sonnet 4.5), choose it in the dropdown above and run the project with npm start and ANTHROPIC_API_KEY — the colored banner under “Ask Clav” will say when Claude is actually active.";
-      } else {
-        reply = window.Clav.answer(q, lastMetrics);
-      }
-      appendMarlonBubble("marlon", reply);
-    }
-    if (els.marlonInput) els.marlonInput.value = "";
-  }
-
-  function initMarlonUi() {
-    try {
-      const saved = localStorage.getItem(AI_MODE_KEY);
-      if (saved && els.marlonAiMode && (saved === "local" || saved === "claude")) {
-        els.marlonAiMode.value = saved;
-      }
-    } catch {
-      /* ignore */
-    }
-
-    resetMarlonThread();
-    void updateMarlonModeBanner();
-
-    if (els.marlonAiMode) {
-      els.marlonAiMode.addEventListener("change", () => {
-        try {
-          localStorage.setItem(AI_MODE_KEY, els.marlonAiMode.value);
-        } catch {
-          /* ignore */
-        }
-        claudeMessages = [];
-        if (!els.marlonThread) return;
-        const afterLbl = document.getElementById("marlon-after-label");
-        els.marlonThread.innerHTML = "";
-        appendMarlonBubble("marlon", getMarlonWelcomeText());
-        if (lastMetrics) {
-          if (afterLbl) afterLbl.classList.remove("hidden");
-          renderMarlonQuick(lastMetrics);
-        } else {
-          if (afterLbl) afterLbl.classList.add("hidden");
-          if (els.marlonQuick) {
-            els.marlonQuick.hidden = true;
-            els.marlonQuick.innerHTML = "";
-          }
-        }
-        void updateMarlonModeBanner();
-      });
-    }
-
-    if (els.marlonForm) {
-      els.marlonForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const v = els.marlonInput ? els.marlonInput.value : "";
-        submitMarlonQuery(v);
-      });
-    }
-    if (els.dockPhoto) {
-      els.dockPhoto.addEventListener("click", () => els.fileInput.click());
-    }
-    if (els.dockSelfie) {
-      els.dockSelfie.addEventListener("click", () => els.cameraCaptureInput.click());
-    }
-    if (els.dockMarlon) {
-      els.dockMarlon.addEventListener("click", () => {
-        scrollToSection(document.getElementById("marlon-section"));
-        if (els.marlonInput) {
-          setTimeout(() => els.marlonInput.focus(), 350);
-        }
-      });
-    }
-    if (els.dockResults) {
-      els.dockResults.addEventListener("click", () => {
-        if (lastMetrics && els.harmonyPanel) scrollToSection(els.harmonyPanel);
-        else scrollToSection(document.getElementById("section-acquire"));
-      });
-    }
-    if (els.dockAppeal) {
-      els.dockAppeal.addEventListener("click", () => scrollToSection(els.sectionAppeal));
-    }
-
-    document.querySelectorAll("[data-marlon-ask]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const q = btn.getAttribute("data-marlon-ask");
-        if (q) submitMarlonQuery(q);
-      });
-    });
-  }
-
-  initMarlonUi();
+  // AI assistant removed
 
   if (els.btnBegin) els.btnBegin.addEventListener("click", () => els.fileInput.click());
   if (els.btnUploadLib) els.btnUploadLib.addEventListener("click", () => els.fileInput.click());
@@ -1420,8 +1151,7 @@
     }
     els.btnClear.disabled = true;
     lastMetrics = null;
-    claudeMessages = [];
-    resetMarlonThread();
+    // AI assistant removed
     if (els.appealScore) els.appealScore.textContent = "—";
     if (els.appealConfidence) els.appealConfidence.textContent = "—";
     if (els.appealWarnings) els.appealWarnings.innerHTML = "";
@@ -1435,32 +1165,7 @@
   window.addEventListener("resize", syncOverlaySize);
   els.preview.addEventListener("load", syncOverlaySize);
 
-  (function checkWrongServer() {
-    const banner = document.getElementById("wrong-server-banner");
-    if (!banner || location.protocol === "file:") return;
-    fetch("/api/health", { cache: "no-store" })
-      .then((r) => {
-        if (!r.ok) throw new Error("no api");
-        return r.json();
-      })
-      .then((j) => {
-        const cur = location.port || (location.protocol === "https:" ? "443" : "80");
-        const lp = j.listenPort != null ? String(j.listenPort) : "";
-        if (
-          lp &&
-          String(cur) !== lp &&
-          (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-        ) {
-          banner.textContent = `Use http://localhost:${lp} — Claude only works on the Node server (you’re on port ${cur}).`;
-          banner.classList.remove("hidden");
-        }
-      })
-      .catch(() => {
-        banner.textContent =
-          "You’re on the basic file server (no Claude). Terminal: cd ~/Desktop/game  →  npm start  → open the exact http://localhost:… URL it prints.";
-        banner.classList.remove("hidden");
-      });
-  })();
+  // AI assistant removed
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") hideScan(false);

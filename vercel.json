@@ -1,14 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/*.js", "use": "@vercel/node" },
-    { "src": "*.{html,css,js,svg,ico,png,jpg,jpeg,woff2,json,txt}", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "^/api/health$", "dest": "/api/health.js" },
-    { "src": "^/api/marlon$", "dest": "/api/marlon.js" },
-    { "handle": "filesystem" },
-    { "src": "^/(.*)$", "dest": "/index.html" }
-  ]
+  "routes": [{ "handle": "filesystem" }, { "src": "^/(.*)$", "dest": "/index.html" }]
 }
 
