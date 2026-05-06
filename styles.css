@@ -792,8 +792,9 @@ body {
 .webcam-wrap {
   margin-top: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: var(--elevated);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
 }
 
 .webcam-wrap video {
@@ -801,7 +802,8 @@ body {
   max-height: 260px;
   display: block;
   background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
 }
 
 .webcam-actions {
@@ -817,8 +819,8 @@ body {
 .status {
   margin: 0.75rem 0 0;
   min-height: 1.4em;
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
   color: var(--muted);
 }
 
@@ -833,17 +835,21 @@ body {
 .placeholder {
   padding: 1.5rem;
   text-align: center;
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
   color: var(--muted);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .result-wrap .image-stage {
   position: relative;
   display: inline-block;
   max-width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 
 .result-wrap img {
@@ -886,7 +892,7 @@ body {
 
 .ring-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.12);
   stroke-width: 6;
 }
 
@@ -909,16 +915,16 @@ body {
 }
 
 .harmony-label {
-  font-size: 0.55rem;
-  letter-spacing: 0.22em;
-  color: var(--muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  color: var(--muted-2);
 }
 
 .harmony-value {
   font-size: 1.65rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: #fff;
+  color: var(--text);
   transition: color 0.3s;
 }
 
@@ -938,15 +944,15 @@ body {
 }
 
 .harmony-max {
-  font-size: 0.65rem;
+  font-size: 0.95rem;
   color: var(--muted);
 }
 
 .harmony-caption {
   margin: 0;
-  font-size: 0.62rem;
+  font-size: 0.95rem;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   max-width: 28rem;
   margin-left: auto;
   margin-right: auto;
@@ -964,25 +970,28 @@ body {
 }
 
 .chart-box {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.75rem;
+  border: 1px solid var(--stroke);
+  padding: 1rem;
   min-height: 240px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
 }
 
 .chart-eyebrow {
   margin: 0 0 0.5rem;
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  color: var(--muted);
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--muted-2);
+  font-weight: 600;
 }
 
 .chart-caption {
   margin: 0 0 0.5rem;
-  font-size: 0.58rem;
+  font-size: 0.9rem;
   color: var(--muted);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
 }
 
 .chart-box canvas {
@@ -992,8 +1001,9 @@ body {
 .heatmap {
   width: 100%;
   max-height: 200px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: #000;
+  border-radius: 12px;
 }
 
 .metrics-grid {
@@ -1015,9 +1025,12 @@ body {
 }
 
 .metric-card {
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  padding: 0.85rem 0.75rem;
-  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--stroke);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
   opacity: 0;
   transform: translateY(8px);
   animation: cardIn 0.5s ease forwards;
@@ -1054,23 +1067,23 @@ body {
 
 .metric-card h3 {
   margin: 0 0 0.45rem;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .metric-bar-wrap {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  height: 6px;
+  background: rgba(255, 255, 255, 0.10);
   margin: 0.55rem 0;
   overflow: hidden;
+  border-radius: 999px;
 }
 
 .metric-bar {
   height: 100%;
   width: 0;
-  background: #fff;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
   transition: width 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -1079,8 +1092,8 @@ body {
   justify-content: space-between;
   gap: 0.35rem;
   flex-wrap: wrap;
-  font-size: 0.58rem;
-  letter-spacing: 0.02em;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
 }
 
 .metric-values span {
@@ -1096,19 +1109,21 @@ body {
   display: inline-block;
   margin-top: 0.45rem;
   padding: 0.15rem 0.45rem;
-  font-size: 0.58rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.01em;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--text);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .metric-desc {
   margin: 0.5rem 0 0;
-  font-size: 0.62rem;
+  font-size: 0.92rem;
   color: var(--muted);
   line-height: 1.5;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .footer {
@@ -1117,8 +1132,8 @@ body {
   max-width: 720px;
   margin: 0 auto;
   padding: 0 1.25rem 2.5rem;
-  font-size: 0.55rem;
-  letter-spacing: 0.06em;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
   color: var(--muted);
   text-align: center;
   line-height: 1.6;
