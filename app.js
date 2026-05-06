@@ -1,4 +1,4 @@
-/* FaceMetrics — client-side facial proportion analysis using face-api.js */
+/* moggednyc — client-side facial proportion analysis using face-api.js */
 
 (function () {
   "use strict";
@@ -1099,14 +1099,14 @@
   function getMarlonWelcomeText() {
     if (getAiMode() === "claude") {
       return (
-        "Hi — I'm Marlon (Claude Sonnet 4.5).\n\n" +
-        "I'll answer using your FaceMetrics numbers when you've run an analysis. " +
+        "Hi — I'm Clav (Claude Sonnet 4.5).\n\n" +
+        "I'll answer using your moggednyc numbers when you've run an analysis. " +
         "This mode needs the Node server: in the project folder run `npm start` after setting `ANTHROPIC_API_KEY` in the environment — the key stays on your machine, not in the browser.\n\n" +
         "Ask anything about your scores, or switch to On-device if you're only using a simple file server."
       );
     }
     return (
-      "Hi — I'm Marlon.\n\n" +
+      "Hi — I'm Clav.\n\n" +
       "After you add a photo and get scores, ask me anything in everyday language: what harmony means, how each number is calculated, or for a simple summary. " +
       "I only use the stats already on your screen — no cloud for chat in this mode.\n\n" +
       "Tap a suggestion below, or type your own question."
@@ -1120,7 +1120,7 @@
     if (getAiMode() === "local") {
       el.className = "marlon-mode-banner marlon-mode-banner--local";
       el.textContent =
-        "ACTIVE: Built-in Marlon — not Claude. Replies are rule-based on your device (no Anthropic).";
+        "ACTIVE: Built-in Clav — not Claude. Replies are rule-based on your device (no Anthropic).";
       return;
     }
 
@@ -1149,7 +1149,7 @@
     } catch {
       el.className = "marlon-mode-banner marlon-mode-banner--warn";
       el.textContent =
-        "Claude is selected, but this site is being served without the Node proxy (e.g. python -m http.server). You are NOT talking to Claude. Run npm start from the project folder, or switch to Built-in Marlon.";
+        "Claude is selected, but this site is being served without the Node proxy (e.g. python -m http.server). You are NOT talking to Claude. Run npm start from the project folder, or switch to Built-in Clav.";
     }
   }
 
@@ -1256,19 +1256,19 @@
         claudeMessages.pop();
         appendMarlonBubble(
           "marlon",
-          "Can't reach /api/marlon · From the FaceMetrics folder run: npm start (after export ANTHROPIC_API_KEY=…). " +
-            "If you only use python -m http.server, that has no Claude proxy — use On-device Marlon or switch to Node.",
+          "Can't reach /api/marlon · From the moggednyc folder run: npm start (after export ANTHROPIC_API_KEY=…). " +
+            "If you only use python -m http.server, that has no Claude proxy — use On-device Clav or switch to Node.",
         );
       }
     } else {
-      if (!window.Marlon || typeof window.Marlon.answer !== "function") return;
+      if (!window.Clav || typeof window.Clav.answer !== "function") return;
       let reply;
       if (/are you claude|is this claude|which (ai|model|engine)|am i using claude|what model/i.test(q)) {
         reply =
-          "Right now you’re using Built-in Marlon, not Claude. I run entirely in your browser from fixed rules + your score numbers.\n\n" +
-          "To use real Claude (Sonnet 4.5), choose it in the dropdown above and run the project with npm start and ANTHROPIC_API_KEY — the colored banner under “Ask Marlon” will say when Claude is actually active.";
+          "Right now you’re using Built-in Clav, not Claude. I run entirely in your browser from fixed rules + your score numbers.\n\n" +
+          "To use real Claude (Sonnet 4.5), choose it in the dropdown above and run the project with npm start and ANTHROPIC_API_KEY — the colored banner under “Ask Clav” will say when Claude is actually active.";
       } else {
-        reply = window.Marlon.answer(q, lastMetrics);
+        reply = window.Clav.answer(q, lastMetrics);
       }
       appendMarlonBubble("marlon", reply);
     }

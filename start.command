@@ -1,5 +1,5 @@
 #!/bin/bash
-# Double-click in Finder to start FaceMetrics (Mac).
+# Double-click in Finder to start moggednyc (Mac).
 cd "$(dirname "$0")"
 echo "Starting server… then opening your browser."
 node server.mjs &

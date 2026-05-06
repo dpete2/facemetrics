@@ -1,5 +1,5 @@
 /**
- * Marlon — on-device guide for FaceMetrics.
+ * Clav — on-device guide for moggednyc.
  * Local mode only: answers use the metrics object computed in app.js (no servers).
  */
 (function (global) {
@@ -62,8 +62,8 @@
     if (!q) return "Ask me something about your harmony, appeal, or any dossier line.";
 
     if (!metrics || typeof metrics.harmony !== "number") {
-      if (/who are you|what is marlon/.test(q)) {
-        return "I’m Marlon — an on-device helper for FaceMetrics. Run an analysis, then ask me about your scores.";
+      if (/who are you|what is marlon|what is clav|who is clav/.test(q)) {
+        return "I’m Clav — an on-device helper for moggednyc. Run an analysis, then ask me about your scores.";
       }
       return "Run an analysis first (add a photo). Then ask me about harmony, appeal, symmetry, thirds, or the heatmap.";
     }
@@ -91,6 +91,6 @@
     return "Try: “Explain my results in plain English”, “What is my appeal score?”, or ask about a specific card like “symmetry” or “golden ratio”.";
   }
 
-  global.Marlon = { answer };
+  global.Clav = { answer };
 })(typeof window !== "undefined" ? window : globalThis);
 

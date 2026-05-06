@@ -1,13 +1,14 @@
-/* FaceMetrics — clinical terminal / cranial-analysis aesthetic */
+/* moggednyc — computational / clinical aesthetic */
 
 :root {
-  --bg: #000000;
-  --panel: #050505;
-  --elevated: #0a0a0a;
-  --line: rgba(255, 255, 255, 0.88);
-  --line-dim: rgba(255, 255, 255, 0.35);
-  --text: #ececec;
-  --muted: #7a7a7a;
+  /* Less-black, still “computational” */
+  --bg: #0b0f16;
+  --panel: rgba(18, 24, 36, 0.72);
+  --elevated: rgba(26, 34, 50, 0.78);
+  --line: rgba(240, 246, 255, 0.88);
+  --line-dim: rgba(240, 246, 255, 0.28);
+  --text: #e9eef6;
+  --muted: rgba(233, 238, 246, 0.62);
   --live: #e52d2d;
   --ok: #3dcc6a;
   --font: "JetBrains Mono", ui-monospace, monospace;
@@ -206,8 +207,9 @@ body {
   pointer-events: none;
   background-color: var(--bg);
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    radial-gradient(circle at 50% 15%, rgba(176, 224, 255, 0.08), transparent 55%),
+    linear-gradient(rgba(176, 224, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 224, 255, 0.06) 1px, transparent 1px);
   background-size: 24px 24px;
   background-position: -1px -1px;
 }
@@ -968,7 +970,7 @@ body {
   display: none;
 }
 
-/* Marlon */
+/* Clav (UI styling still uses `marlon-*` class names) */
 .marlon-panel {
   scroll-margin-top: 1rem;
 }

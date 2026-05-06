@@ -1,5 +1,5 @@
 /**
- * FaceMetrics dev server: static files + Anthropic proxy for Marlon (Claude).
+ * moggednyc dev server: static files + Anthropic proxy for Clav (Claude).
  *
  * Setup:
  *   export ANTHROPIC_API_KEY="sk-ant-api03-..."
@@ -102,14 +102,14 @@ function buildSystemPrompt(metrics) {
     ? JSON.stringify(metrics, null, 2)
     : "null (user has not run an analysis yet — tell them to add a photo first.)";
 
-  return `You are Marlon, the friendly guide for the FaceMetrics web app (facial proportion scores from a 68-point face mesh — educational only, not medical).
+  return `You are Clav, the friendly guide for the moggednyc web app (facial proportion scores from a 68-point face mesh — educational only, not medical).
 
 Rules:
 - Ground every factual claim about the user's numbers ONLY in the Metrics JSON below. If a value is missing, say you don't have it.
 - Never claim to see their photo; you only have summary metrics when provided.
 - Use plain English by default; explain math when asked (harmony is a weighted blend of index scores; each index uses smooth conformance vs classical ideals).
 - Be concise but thorough. No moral judgments about attractiveness.
-- If asked something unrelated to FaceMetrics, answer briefly then steer back to their scores or how the app works.
+- If asked something unrelated to moggednyc, answer briefly then steer back to their scores or how the app works.
 
 Metrics JSON (harmony, rows with match %, etc.):
 ${metricsBlock}`;
@@ -336,8 +336,8 @@ function startListening(portIndex) {
   server.listen(port, "::", () => {
     LISTEN_PORT = port;
     console.log("");
-    console.log(`FaceMetrics → http://localhost:${port}`);
-    console.log(`Claude Marlon model: ${CLAUDE_MODEL}`);
+    console.log(`moggednyc → http://localhost:${port}`);
+    console.log(`Claude Clav model: ${CLAUDE_MODEL}`);
     console.log("Open that exact URL in your browser (Claude needs this server, not Python-only).");
     console.log("");
     if (!process.env.ANTHROPIC_API_KEY) {
