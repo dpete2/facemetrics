@@ -19,12 +19,16 @@
     sectionDossier: $("#section-dossier"),
     sectionHeatmap: $("#section-heatmap"),
     btnTakePhoto: $("#btn-take-photo"),
-    btnWebcam: $("#btn-webcam"),
+    btnLiveFeed: $("#btn-live-feed"),
     btnClear: $("#btn-clear"),
-    btnCapture: $("#btn-capture"),
-    btnWebcamCancel: $("#btn-webcam-cancel"),
-    webcamWrap: $("#webcam-wrap"),
-    webcam: $("#webcam"),
+    captureSession: $("#capture-session"),
+    captureSessionVideo: $("#capture-session-video"),
+    captureSessionMsg: $("#capture-session-msg"),
+    captureFacingLabel: $("#capture-facing-label"),
+    captureShutter: $("#capture-shutter"),
+    captureFlip: $("#capture-flip"),
+    captureSessionUpload: $("#capture-session-upload"),
+    captureSessionCancel: $("#capture-session-cancel"),
     status: $("#status"),
     placeholder: $("#placeholder"),
     resultWrap: $("#result-wrap"),
@@ -99,6 +103,7 @@
   // AI assistant removed
   let scanTimer = null;
   let scanPct = 0;
+  let captureFacingUser = true;
 
   function clamp01(x) {
     return Math.max(0, Math.min(1, x));
@@ -1058,60 +1063,99 @@
     img.src = url;
   }
 
-  async function startWebcam() {
+  function setCaptureMsg(text) {
+    if (els.captureSessionMsg) els.captureSessionMsg.textContent = text || "";
+  }
+
+  function updateCaptureFacingLabel() {
+    if (!els.captureFacingLabel) return;
+    els.captureFacingLabel.textContent = captureFacingUser ? "FRONT/USER" : "BACK/ENV";
+  }
+
+  function stopMediaTracks() {
+    if (streamRef) {
+      streamRef.getTracks().forEach((t) => t.stop());
+      streamRef = null;
+    }
+    if (els.captureSessionVideo) els.captureSessionVideo.srcObject = null;
+  }
+
+  async function startCaptureSessionStream() {
+    stopMediaTracks();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCaptureMsg("NO LIVE FEED IN THIS BROWSER — USE UPLOAD OR TAKE A SELFIE");
+      return false;
+    }
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setStatus(
-          "This browser does not support live webcam here. Use “Take photo” or choose a picture from the box above.",
-          true,
-        );
-        return;
-      }
+      const videoConstraint = captureFacingUser
+        ? { facingMode: { ideal: "user" } }
+        : { facingMode: { ideal: "environment" } };
       streamRef = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { ...videoConstraint, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
       });
-      els.webcam.srcObject = streamRef;
-      els.webcamWrap.classList.remove("hidden");
-      setStatus("Position your face in the frame, then capture.");
+      els.captureSessionVideo.srcObject = streamRef;
+      setCaptureMsg("");
+      updateCaptureFacingLabel();
+      setStatus("");
+      return true;
     } catch (e) {
       const blockedOnHttpPhone =
         typeof window.isSecureContext !== "undefined" &&
         !window.isSecureContext &&
         location.hostname !== "localhost" &&
         location.hostname !== "127.0.0.1";
-      let msg =
-        "Camera access was denied or unavailable. Use “Take photo” to use your camera app, or allow camera in site settings.";
-      if (blockedOnHttpPhone) {
-        msg =
-          "Live webcam is blocked on http:// when you open this site from another device (phone browsers require https:// for that). Use “Take photo” — it opens your regular Camera app — or pick a photo from the box above.";
-      } else if (e && (e.name === "NotAllowedError" || e.name === "PermissionDeniedError")) {
-        msg =
-          "Camera permission was denied. Change it in your browser or system settings, or use “Take photo” / choose a file.";
-      } else if (e && e.name === "NotFoundError") {
-        msg = "No camera was found. Choose a photo from your library instead.";
-      }
-      setStatus(msg, true);
+      let suffix = "USE UPLOAD OR TAKE A SELFIE";
+      if (blockedOnHttpPhone) suffix = "NEED HTTPS ON PHONE · USE UPLOAD";
+      else if (e && (e.name === "NotAllowedError" || e.name === "PermissionDeniedError"))
+        suffix = "ALLOW CAMERA OR USE UPLOAD";
+      else if (e && e.name === "NotFoundError") suffix = "NO CAMERA FOUND · USE UPLOAD";
+      setCaptureMsg(`CAMERA UNAVAILABLE — ${suffix}`);
+      return false;
     }
   }
 
-  function stopWebcam() {
-    if (streamRef) {
-      streamRef.getTracks().forEach((t) => t.stop());
-      streamRef = null;
-    }
-    els.webcamWrap.classList.add("hidden");
+  function openCaptureSession() {
+    if (!els.captureSession) return;
+    els.captureSession.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    setCaptureMsg("STARTING LIVE FEED…");
+    updateCaptureFacingLabel();
+    startCaptureSessionStream();
   }
 
-  function captureWebcam() {
-    const video = els.webcam;
+  function closeCaptureSession() {
+    if (!els.captureSession) {
+      stopMediaTracks();
+      return;
+    }
+    els.captureSession.classList.add("hidden");
+    document.body.style.overflow = "";
+    setCaptureMsg("");
+    stopMediaTracks();
+  }
+
+  function captureSessionFrame() {
+    const video = els.captureSessionVideo;
+    if (!video || !video.videoWidth) {
+      setCaptureMsg("WAIT FOR FEED — THEN TAP SHUTTER");
+      return;
+    }
     const c = document.createElement("canvas");
     c.width = video.videoWidth;
     c.height = video.videoHeight;
     c.getContext("2d").drawImage(video, 0, 0);
-    stopWebcam();
+    const dataUrl = c.toDataURL("image/jpeg", 0.92);
+    closeCaptureSession();
     const img = new Image();
     img.onload = () => analyzeImage(img);
-    img.src = c.toDataURL("image/jpeg", 0.92);
+    img.src = dataUrl;
+  }
+
+  async function flipCaptureCamera() {
+    captureFacingUser = !captureFacingUser;
+    updateCaptureFacingLabel();
+    await startCaptureSessionStream();
   }
 
   function syncOverlaySize() {
@@ -1211,8 +1255,7 @@
 
   if (els.btnBegin) {
     els.btnBegin.addEventListener("click", () => {
-      setActiveTab("scan");
-      els.cameraCaptureInput.click();
+      openCaptureSession();
     });
   }
   if (els.btnUploadPhoto) {
@@ -1259,9 +1302,18 @@
     if (f && f.type.startsWith("image/")) loadImageFromFile(f);
   });
 
-  els.btnWebcam.addEventListener("click", startWebcam);
-  els.btnWebcamCancel.addEventListener("click", stopWebcam);
-  els.btnCapture.addEventListener("click", captureWebcam);
+  if (els.btnLiveFeed) {
+    els.btnLiveFeed.addEventListener("click", () => openCaptureSession());
+  }
+  if (els.captureShutter) els.captureShutter.addEventListener("click", captureSessionFrame);
+  if (els.captureFlip) els.captureFlip.addEventListener("click", () => flipCaptureCamera());
+  if (els.captureSessionUpload) {
+    els.captureSessionUpload.addEventListener("click", () => {
+      closeCaptureSession();
+      els.fileInput.click();
+    });
+  }
+  if (els.captureSessionCancel) els.captureSessionCancel.addEventListener("click", closeCaptureSession);
 
   els.btnClear.addEventListener("click", () => {
     els.preview.removeAttribute("src");
@@ -1305,7 +1357,12 @@
   // AI assistant removed
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") hideScan(false);
+    if (e.key !== "Escape") return;
+    if (els.captureSession && !els.captureSession.classList.contains("hidden")) {
+      closeCaptureSession();
+      return;
+    }
+    hideScan(false);
   });
 
   setStatus("Awaiting ingress — load models on first specimen.");
