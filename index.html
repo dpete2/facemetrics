@@ -20,38 +20,6 @@
 </head>
 <body>
   <div id="wrong-server-banner" class="wrong-server-banner hidden" role="alert"></div>
-  <div id="acquire-screen" class="acquire-screen hidden" role="dialog" aria-modal="true" aria-label="Choose a photo to analyze">
-    <div class="acquire-bg" aria-hidden="true"></div>
-    <div class="acquire-card">
-      <div class="acquire-top">
-        <div>
-          <p class="acquire-kicker">Get started</p>
-          <h2 class="acquire-title">Capture a photo</h2>
-          <p class="acquire-sub">Selfie or upload. Your image stays on this device.</p>
-        </div>
-        <button type="button" class="acquire-close" id="acquire-close" aria-label="Close">✕</button>
-      </div>
-
-      <div class="acquire-grid">
-        <button type="button" class="acquire-action acquire-action--primary" id="acquire-selfie">
-          <span class="acquire-action-title">Take a selfie</span>
-          <span class="acquire-action-sub">Opens your camera app (works on phones).</span>
-        </button>
-        <button type="button" class="acquire-action" id="acquire-upload">
-          <span class="acquire-action-title">Upload a photo</span>
-          <span class="acquire-action-sub">Choose from your library.</span>
-        </button>
-        <button type="button" class="acquire-action" id="acquire-webcam">
-          <span class="acquire-action-title">Live webcam</span>
-          <span class="acquire-action-sub">Best on desktop.</span>
-        </button>
-      </div>
-
-      <div class="acquire-note">
-        Tip: face centered, neutral expression, bright even light.
-      </div>
-    </div>
-  </div>
   <div id="scan-screen" class="scan-screen hidden" role="dialog" aria-modal="true" aria-label="Scanning face">
     <div class="scan-bg" aria-hidden="true"></div>
     <div class="scan-card">
@@ -108,13 +76,13 @@
       <section class="overview-card frame">
         <h2 class="protocol-title">Proportion analysis</h2>
         <p class="protocol-desc">
-          Front-facing photo → landmarks → harmony score and illustrative tier (Chad / CL / HTN / MTN / LTN).
-          Educational only; not medical and not population percentiles.
+          <strong>Begin analysis</strong> opens your camera to snap a shot. Prefer a library photo or webcam? Use the <strong>Scan</strong> tab.
+          Then: landmarks → harmony score and illustrative tier (Chad / CL / HTN / MTN / LTN). Educational only; not medical or population percentiles.
         </p>
         <p class="privacy-strip">Image never leaves your device.</p>
 
         <div class="cta-stack cta-stack--overview">
-          <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — choose image">
+          <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — open camera to take a photo">
             <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <polygon points="8,5 19,12 8,19" fill="currentColor" stroke="none"/>
             </svg>
@@ -122,9 +90,6 @@
           </button>
 
           <div class="cta-row">
-            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-upload-lib">
-              Upload photo
-            </button>
             <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-view-dossier" data-go-tab="results">
               Results
             </button>
@@ -158,13 +123,14 @@
         <div class="dropzone-inner">
           <div class="drop-mark" aria-hidden="true">+</div>
           <p class="drop-title">Ingress buffer — front-facing raster</p>
-          <p class="hint desktop-hint">DROP · BROWSE · <strong>TAKE PHOTO</strong> / LIVE WEBCAM (HTTPS OR LOCALHOST)</p>
-          <p class="hint mobile-only-hint">TAP · BROWSE · <strong>TAKE PHOTO</strong></p>
+          <p class="hint desktop-hint">Or use <strong>Take a selfie</strong> · <strong>Upload photo</strong> · LIVE WEBCAM below.</p>
+          <p class="hint mobile-only-hint"><strong>Take a selfie</strong> or <strong>Upload photo</strong> below, or tap to browse.</p>
         </div>
       </div>
 
       <div class="actions">
-        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-take-photo">TAKE PHOTO</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-take-photo">Take a selfie</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-upload-photo">Upload photo</button>
         <button type="button" class="btn btn-outline-cta btn-compact" id="btn-webcam">LIVE WEBCAM</button>
         <button type="button" class="btn btn-outline-cta btn-compact" id="btn-clear" disabled>CLEAR BUFFER</button>
       </div>
