@@ -12,6 +12,38 @@
 </head>
 <body>
   <div id="wrong-server-banner" class="wrong-server-banner hidden" role="alert"></div>
+  <div id="acquire-screen" class="acquire-screen hidden" role="dialog" aria-modal="true" aria-label="Choose a photo to analyze">
+    <div class="acquire-bg" aria-hidden="true"></div>
+    <div class="acquire-card">
+      <div class="acquire-top">
+        <div>
+          <p class="acquire-kicker">Get started</p>
+          <h2 class="acquire-title">Capture a photo</h2>
+          <p class="acquire-sub">Selfie or upload. Your image stays on this device.</p>
+        </div>
+        <button type="button" class="acquire-close" id="acquire-close" aria-label="Close">✕</button>
+      </div>
+
+      <div class="acquire-grid">
+        <button type="button" class="acquire-action acquire-action--primary" id="acquire-selfie">
+          <span class="acquire-action-title">Take a selfie</span>
+          <span class="acquire-action-sub">Opens your camera app (works on phones).</span>
+        </button>
+        <button type="button" class="acquire-action" id="acquire-upload">
+          <span class="acquire-action-title">Upload a photo</span>
+          <span class="acquire-action-sub">Choose from your library.</span>
+        </button>
+        <button type="button" class="acquire-action" id="acquire-webcam">
+          <span class="acquire-action-title">Live webcam</span>
+          <span class="acquire-action-sub">Best on desktop.</span>
+        </button>
+      </div>
+
+      <div class="acquire-note">
+        Tip: face centered, neutral expression, bright even light.
+      </div>
+    </div>
+  </div>
   <div id="scan-screen" class="scan-screen hidden" role="dialog" aria-modal="true" aria-label="Scanning face">
     <div class="scan-bg" aria-hidden="true"></div>
     <div class="scan-card">

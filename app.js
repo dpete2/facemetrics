@@ -1086,7 +1086,21 @@
 
   // AI assistant removed
 
-  if (els.btnBegin) els.btnBegin.addEventListener("click", () => els.fileInput.click());
+  function showAcquire() {
+    const s = document.getElementById("acquire-screen");
+    if (!s) return;
+    s.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function hideAcquire() {
+    const s = document.getElementById("acquire-screen");
+    if (!s) return;
+    s.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  if (els.btnBegin) els.btnBegin.addEventListener("click", showAcquire);
   if (els.btnUploadLib) els.btnUploadLib.addEventListener("click", () => els.fileInput.click());
   if (els.btnViewDossier) els.btnViewDossier.addEventListener("click", () => scrollToSection(els.sectionDossier));
   if (els.btnCorpusHeatmap) els.btnCorpusHeatmap.addEventListener("click", () => scrollToSection(els.sectionHeatmap));
@@ -1136,6 +1150,41 @@
   els.btnWebcamCancel.addEventListener("click", stopWebcam);
   els.btnCapture.addEventListener("click", captureWebcam);
 
+  // Acquire modal wiring
+  const acquire = {
+    screen: document.getElementById("acquire-screen"),
+    close: document.getElementById("acquire-close"),
+    selfie: document.getElementById("acquire-selfie"),
+    upload: document.getElementById("acquire-upload"),
+    webcam: document.getElementById("acquire-webcam"),
+  };
+
+  if (acquire.close) acquire.close.addEventListener("click", hideAcquire);
+  if (acquire.screen) {
+    acquire.screen.addEventListener("click", (e) => {
+      if (e.target === acquire.screen) hideAcquire();
+    });
+  }
+  if (acquire.selfie) {
+    acquire.selfie.addEventListener("click", () => {
+      hideAcquire();
+      els.cameraCaptureInput.click();
+    });
+  }
+  if (acquire.upload) {
+    acquire.upload.addEventListener("click", () => {
+      hideAcquire();
+      els.fileInput.click();
+    });
+  }
+  if (acquire.webcam) {
+    acquire.webcam.addEventListener("click", () => {
+      hideAcquire();
+      scrollToSection(document.getElementById("section-acquire"));
+      startWebcam();
+    });
+  }
+
   els.btnClear.addEventListener("click", () => {
     els.preview.removeAttribute("src");
     els.placeholder.classList.remove("hidden");
@@ -1168,7 +1217,14 @@
   // AI assistant removed
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") hideScan(false);
+    if (e.key === "Escape") {
+      hideScan(false);
+      const s = document.getElementById("acquire-screen");
+      if (s && !s.classList.contains("hidden")) {
+        s.classList.add("hidden");
+        document.body.style.overflow = "";
+      }
+    }
   });
 
   setStatus("Awaiting ingress — load models on first specimen.");
