@@ -30,37 +30,25 @@
     class="entrance-screen"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="entrance-hero-heading"
+    aria-labelledby="entrance-face-label"
     aria-hidden="false"
   >
-    <div class="entrance-blobs" aria-hidden="true">
-      <div class="entrance-blob entrance-blob--one"></div>
-      <div class="entrance-blob entrance-blob--two"></div>
-      <div class="entrance-blob entrance-blob--three"></div>
-    </div>
-    <div class="entrance-scrim" aria-hidden="true"></div>
-    <div class="entrance-card">
+    <div class="entrance-site-bg" aria-hidden="true"></div>
+    <div class="entrance-frame">
       <header class="entrance-bar">
-        <span class="entrance-brand">moggednyc</span>
+        <span class="entrance-brand" id="entrance-face-label">moggednyc</span>
         <button type="button" class="entrance-text-btn" id="entrance-menu" aria-label="Enter site">Menu</button>
       </header>
 
-      <div class="entrance-hero" id="entrance-hero-heading">
-        <p class="entrance-line entrance-line--accent">THE ART OF</p>
-        <p class="entrance-line entrance-line--mega">
-          FACIAL<span class="entrance-insert" aria-hidden="true">&nbsp;(</span>
-          <span class="entrance-thumb" role="presentation">
-            <!-- abstract mark, not a real portrait -->
-            <span class="entrance-thumb-inner"></span>
-          </span>
-          <span class="entrance-insert" aria-hidden="true">)</span>
-          <span class="entrance-soft">proportion</span>
-        </p>
-        <p class="entrance-line entrance-line--mega">ANALYSIS</p>
-        <p class="entrance-row">
-          <span class="entrance-micro">We’re built for</span>
-          <span class="entrance-line entrance-line--sub">ON-DEVICE PRECISION</span>
-        </p>
+      <div class="entrance-face-wrap">
+        <img
+          class="entrance-face"
+          src="./assets/entrance-face.png"
+          width="620"
+          height="620"
+          alt=""
+          decoding="async"
+        />
       </div>
 
       <button type="button" class="entrance-continue" id="btn-entrance-continue">continue</button>
@@ -132,7 +120,6 @@
   <header class="top-bar">
     <div class="brand-block">
       <span class="brand-main">MOGGEDNYC</span>
-      <span class="brand-sub">Facial proportion mesh · on-device</span>
     </div>
     <div class="top-meta">
       <div class="top-meta-row">
@@ -140,7 +127,6 @@
           <span class="tier-pill-label" id="header-tier-acronym">—</span>
         </span>
       </div>
-      <p class="meta-line">68-point mesh · on-device only</p>
     </div>
   </header>
 
@@ -148,37 +134,22 @@
     <button type="button" class="tab-btn is-active" role="tab" aria-selected="true" id="tab-btn-overview" data-tab="overview">Overview</button>
     <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-scan" data-tab="scan">Scan</button>
     <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-results" data-tab="results">Results</button>
+    <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-charts" data-tab="charts">Charts</button>
     <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-appeal" data-tab="appeal">Appeal</button>
   </nav>
 
   <main class="shell shell--tabs">
     <div id="tab-panel-overview" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-btn-overview">
-      <section class="overview-card frame">
-        <h2 class="protocol-title">Proportion analysis</h2>
-        <p class="protocol-desc">
-          <strong>Begin</strong> opens the camera preview. Photos and uploads are on <strong>Scan</strong>.
-          Landmark mesh → harmony + tier bands (LTN–Chad heuristic). Educational.
-        </p>
-        <p class="privacy-strip">Stays on this device.</p>
-
+      <section class="overview-minimal">
         <div class="cta-stack cta-stack--overview">
-          <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — open live feed to take a photo">
-            <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polygon points="8,5 19,12 8,19" fill="currentColor" stroke="none"/>
-            </svg>
-            <span>Begin analysis</span>
+          <button type="button" class="btn btn-ghost-main" id="btn-begin" aria-label="Begin analysis">
+            Begin analysis
           </button>
 
-          <div class="cta-row">
-            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-view-dossier" data-go-tab="results">
-              Results
-            </button>
-            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-corpus-heatmap" data-go-tab="results">
-              Charts
-            </button>
-            <button type="button" class="btn btn-outline-cta btn-tab-link" id="btn-appeal" data-go-tab="appeal">
-              Appeal
-            </button>
+          <div class="cta-row cta-row--links">
+            <button type="button" class="link-tab" id="btn-view-dossier" data-go-tab="results">Results</button>
+            <button type="button" class="link-tab" id="btn-corpus-heatmap" data-go-tab="charts">Charts</button>
+            <button type="button" class="link-tab" id="btn-appeal" data-go-tab="appeal">Appeal</button>
           </div>
         </div>
       </section>
@@ -189,7 +160,7 @@
     <section class="panel panel-input frame-minor" aria-labelledby="input-title" id="section-acquire">
       <h2 id="input-title" class="panel-label">Add a photo</h2>
 
-      <p class="mobile-hint">Bottom bar: Home · Scan · Results · Appeal.</p>
+      <p class="mobile-hint">Dock: Home · Scan · Results · Charts · Appeal.</p>
 
       <div
         id="dropzone"
@@ -236,7 +207,7 @@
     </div>
 
     <div id="tab-panel-results" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-results" hidden>
-    <section class="panel panel-score frame-minor" id="harmony-panel" aria-live="polite">
+    <section class="panel panel-score frame-minor panel-soft" id="harmony-panel" aria-live="polite">
       <h2 class="panel-label">Harmony</h2>
       <div class="harmony">
         <div class="harmony-ring" id="harmony-ring">
@@ -256,6 +227,10 @@
             <span class="harmony-max">/ 100</span>
           </div>
         </div>
+        <p class="harmony-local-note">locally based</p>
+        <p class="harmony-caption">
+          LTN &lt;50 · MTN 50–79 · HTN ≥80 · CL 88–93 · Chad ≥94
+        </p>
         <div id="harmony-tier" class="harmony-tier hidden" aria-live="polite">
           <p class="harmony-tier-badge">
             <span class="harmony-tier-acronym" id="harmony-tier-acronym">—</span>
@@ -263,30 +238,29 @@
           </p>
           <p class="harmony-tier-note" id="harmony-tier-note"></p>
         </div>
-        <p class="harmony-caption">
-          Bands (harmony score): LTN &lt;50 · MTN 50–79 · HTN ≥80 · CL 88–93 · Chad ≥94 · illustrative only.
-        </p>
       </div>
     </section>
 
-    <section class="panel panel-charts frame-minor">
+    <section class="panel panel-soft frame-minor" id="section-dossier" aria-labelledby="metrics-title">
+      <h2 id="metrics-title" class="panel-label">Metrics</h2>
+      <div id="metrics-grid" class="metrics-grid"></div>
+    </section>
+    </div>
+
+    <div id="tab-panel-charts" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-charts" hidden>
+    <section class="panel panel-soft panel-charts-only frame-minor">
       <h2 class="panel-label">Charts</h2>
       <div class="charts-row">
-        <div class="chart-box">
+        <div class="chart-box chart-box-flat">
           <p class="chart-eyebrow">Radar</p>
           <canvas id="radar-chart" aria-label="Radar chart comparing your ratios to ideals"></canvas>
         </div>
-        <div class="chart-box chart-box-heatmap" id="section-heatmap">
+        <div class="chart-box chart-box-flat chart-box-heatmap" id="section-heatmap">
           <p class="chart-eyebrow">Heatmap</p>
-          <p class="chart-caption">Residual asymmetry (brighter → closer to mirror).</p>
+          <p class="chart-caption subtle">Residual asymmetry</p>
           <canvas id="heatmap-canvas" class="heatmap"></canvas>
         </div>
       </div>
-    </section>
-
-    <section class="panel panel-metrics frame-minor" id="section-dossier" aria-labelledby="metrics-title">
-      <h2 id="metrics-title" class="panel-label">Metrics</h2>
-      <div id="metrics-grid" class="metrics-grid"></div>
     </section>
     </div>
 
@@ -339,15 +313,14 @@
   </main>
 
   <nav class="mobile-dock" id="mobile-dock" aria-label="Sections">
-    <button type="button" class="mobile-dock-btn is-active" id="dock-overview" data-tab="overview" aria-label="Overview tab">Home</button>
-    <button type="button" class="mobile-dock-btn" id="dock-scan" data-tab="scan" aria-label="Scan tab">Scan</button>
-    <button type="button" class="mobile-dock-btn" id="dock-results" data-tab="results" aria-label="Results tab">Results</button>
-    <button type="button" class="mobile-dock-btn" id="dock-appeal" data-tab="appeal" aria-label="Appeal tab">Appeal</button>
+    <button type="button" class="mobile-dock-btn is-active" id="dock-overview" data-tab="overview" aria-label="Home">Home</button>
+    <button type="button" class="mobile-dock-btn" id="dock-scan" data-tab="scan" aria-label="Scan">Scan</button>
+    <button type="button" class="mobile-dock-btn" id="dock-results" data-tab="results" aria-label="Results">Results</button>
+    <button type="button" class="mobile-dock-btn" id="dock-charts" data-tab="charts" aria-label="Charts">Charts</button>
+    <button type="button" class="mobile-dock-btn" id="dock-appeal" data-tab="appeal" aria-label="Appeal">Appeal</button>
   </nav>
 
-  <footer class="footer">
-    <p>MOGGEDNYC · face-api.js 68-LANDMARK · EDUCATIONAL MORPHOMETRY ONLY — NOT MEDICAL OR PSYCHOLOGICAL ADVICE</p>
-  </footer>
+  <footer class="footer footer--minimal"><p>moggednyc</p></footer>
 
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>

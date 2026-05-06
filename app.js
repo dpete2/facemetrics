@@ -65,7 +65,19 @@
     scanLeft: $("#scan-left"),
   };
 
-  const TAB_ORDER = ["overview", "scan", "results", "appeal"];
+  const TAB_ORDER = ["overview", "scan", "results", "charts", "appeal"];
+
+  function resizeChartsIfNeeded() {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        try {
+          if (radarChartInstance && typeof radarChartInstance.resize === "function") radarChartInstance.resize();
+        } catch (_) {
+          /* ignore */
+        }
+      });
+    });
+  }
 
   function setActiveTab(name) {
     if (!TAB_ORDER.includes(name)) return;
@@ -91,6 +103,7 @@
       if (dockBtn) dockBtn.classList.toggle("is-active", on);
     });
     window.scrollTo(0, 0);
+    if (name === "charts") resizeChartsIfNeeded();
   }
 
   // AI assistant removed
