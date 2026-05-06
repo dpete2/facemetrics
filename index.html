@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>FaceMetrics — Craniofacial Analysis Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="wrong-server-banner" class="wrong-server-banner hidden" role="alert"></div>
+  <div id="scan-screen" class="scan-screen hidden" role="dialog" aria-modal="true" aria-label="Scanning face">
+    <div class="scan-bg" aria-hidden="true"></div>
+    <div class="scan-card">
+      <p class="scan-kicker">/// PROTOCOL</p>
+      <h2 class="scan-title">SCANNING SUBJECT</h2>
+      <p class="scan-sub" id="scan-sub">Initializing mesh extraction…</p>
+
+      <div class="scan-meter" aria-hidden="true">
+        <div class="scan-meter-fill" id="scan-fill"></div>
+      </div>
+      <div class="scan-row">
+        <span class="scan-left" id="scan-left">MODEL LOAD</span>
+        <span class="scan-right"><span id="scan-pct">0</span>%</span>
+      </div>
+
+      <div class="scan-frame" aria-hidden="true">
+        <div class="scan-grid"></div>
+        <div class="scan-sweep"></div>
+        <div class="scan-bracket scan-bracket--tl"></div>
+        <div class="scan-bracket scan-bracket--tr"></div>
+        <div class="scan-bracket scan-bracket--bl"></div>
+        <div class="scan-bracket scan-bracket--br"></div>
+      </div>
+
+      <p class="scan-foot">Image stays on-device. No upload. Press ESC to cancel overlay.</p>
+    </div>
+  </div>
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <header class="top-bar">
+    <div class="brand-block">
+      <span class="brand-main">FACEMETRICS</span>
+      <span class="brand-sub">CRANIOFACIAL PROPORTION ENGINE</span>
+    </div>
+    <div class="top-meta">
+      <span class="live-badge" title="Runtime active in this tab"><span class="live-dot" aria-hidden="true"></span> LIVE</span>
+      <p class="meta-line">FACEMETRICS V1.0 // LANDMARK MESH 68PT // CLIENT-SIDE PIPELINE // NO UPLINK</p>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero-stack">
+      <div class="frame frame--protocol">
+        <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+        <h2 class="protocol-title">Computational craniofacial morphometry</h2>
+        <p class="protocol-desc">
+          Derives twelve classical proportion indices from a 68-point facial mesh: vertical thirds, golden-ratio span,
+          interocular harmony, nasolabial segments, gonial vectors, bilateral symmetry residuals, and zygomatic–gonial breadth
+          ratio versus reference ideals. Output is descriptive morphometry only.
+        </p>
+      </div>
+
+      <div class="frame frame--procedure">
+        <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+        <p class="procedure-label">Procedure</p>
+        <ol class="procedure-list">
+          <li><span class="proc-num">01</span> Frame face frontally; neutral expression; diffuse lighting.</li>
+          <li><span class="proc-num">02</span> Specify acquisition: library file, device capture, or live feed (localhost).</li>
+          <li><span class="proc-num">03</span> Mesh extraction and ratio quantization versus classical baselines.</li>
+          <li><span class="proc-num">04</span> Symmetry raster synthesis and harmony composite weighting.</li>
+          <li><span class="proc-num">05</span> Review dossier: radar breakdown, corpus heatmap, per-index deviation.</li>
+        </ol>
+        <p class="privacy-strip">Image never leaves your device. All tensors resolved in-browser.</p>
+      </div>
+
+      <div class="cta-stack">
+        <button type="button" class="btn btn-primary-cta" id="btn-begin" aria-label="Begin analysis — choose image">
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polygon points="8,5 19,12 8,19" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>BEGIN ANALYSIS</span>
+          <svg class="btn-icon btn-icon--sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M9 10l-4 4 4 4M5 14h11a4 4 0 010 8H9"/>
+          </svg>
+        </button>
+
+        <button type="button" class="btn btn-outline-cta" id="btn-upload-lib">
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M12 5v14M5 12l7-7 7 7"/>
+          </svg>
+          <span>UPLOAD FROM LIBRARY</span>
+        </button>
+
+        <button type="button" class="btn btn-outline-cta" id="btn-view-dossier">
+          <span>VIEW DOSSIER</span>
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+
+        <button type="button" class="btn btn-outline-cta" id="btn-corpus-heatmap">
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M3 12h18M12 3a16 16 0 000 18"/>
+          </svg>
+          <span>CORPUS HEATMAP</span>
+        </button>
+
+        <button type="button" class="btn btn-outline-cta" id="btn-appeal">
+          <span>APPEAL SCORE</span>
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M12 21s-7-4.4-9-9a5.2 5.2 0 019-5 5.2 5.2 0 019 5c-2 4.6-9 9-9 9z"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel panel-input frame-minor" aria-labelledby="input-title" id="section-acquire">
+      <h2 id="input-title" class="panel-label">Acquisition channel</h2>
+
+      <p class="mobile-hint">Tap the box or use <strong>Photo</strong> / <strong>Selfie</strong> in the bar below on phones.</p>
+
+      <div
+        id="dropzone"
+        class="dropzone"
+        tabindex="0"
+        role="button"
+        aria-label="Drop an image or click to choose file"
+      >
+        <input type="file" id="file-input" accept="image/*" hidden />
+        <input type="file" id="camera-capture-input" accept="image/*" capture="user" hidden />
+        <div class="dropzone-inner">
+          <div class="drop-mark" aria-hidden="true">+</div>
+          <p class="drop-title">Ingress buffer — front-facing raster</p>
+          <p class="hint desktop-hint">DROP · BROWSE · <strong>TAKE PHOTO</strong> / LIVE WEBCAM (HTTPS OR LOCALHOST)</p>
+          <p class="hint mobile-only-hint">TAP · BROWSE · <strong>TAKE PHOTO</strong></p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-take-photo">TAKE PHOTO</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-webcam">LIVE WEBCAM</button>
+        <button type="button" class="btn btn-outline-cta btn-compact" id="btn-clear" disabled>CLEAR BUFFER</button>
+      </div>
+
+      <div id="webcam-wrap" class="webcam-wrap hidden">
+        <video id="webcam" autoplay playsinline muted></video>
+        <div class="webcam-actions">
+          <button type="button" class="btn btn-primary-cta btn-compact" id="btn-capture">CAPTURE</button>
+          <button type="button" class="btn btn-outline-cta btn-compact" id="btn-webcam-cancel">CANCEL</button>
+        </div>
+      </div>
+
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <section class="panel panel-visual frame-minor" aria-labelledby="visual-title">
+      <h2 id="visual-title" class="panel-label">Mesh overlay</h2>
+      <div class="visual-wrap">
+        <div id="placeholder" class="placeholder">
+          <p>Awaiting specimen. Use acquisition channel above.</p>
+        </div>
+        <div id="result-wrap" class="result-wrap hidden">
+          <div class="image-stage">
+            <img id="preview" alt="Subject raster" />
+            <canvas id="overlay"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-score frame-minor" id="harmony-panel" aria-live="polite">
+      <h2 class="panel-label">Harmony composite</h2>
+      <div class="harmony">
+        <div class="harmony-ring" id="harmony-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="100%" stop-color="#9a9a9a" />
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg" cx="60" cy="60" r="52" />
+            <circle id="ring-progress" class="ring-progress" cx="60" cy="60" r="52" stroke="url(#ringGrad)" />
+          </svg>
+          <div class="harmony-center">
+            <span class="harmony-label">HARMONY</span>
+            <span class="harmony-value" id="harmony-value">—</span>
+            <span class="harmony-max">/ 100</span>
+          </div>
+        </div>
+        <p class="harmony-caption">
+          Weighted aggregate versus classical proportion baselines. Not diagnostic.
+        </p>
+      </div>
+    </section>
+
+    <section class="panel frame-minor appeal-panel" id="section-appeal" aria-labelledby="appeal-title">
+      <h2 id="appeal-title" class="panel-label">Appeal (experimental)</h2>
+      <div class="appeal-top">
+        <div class="appeal-scorebox">
+          <p class="appeal-label">Appeal score</p>
+          <p class="appeal-score"><span id="appeal-score">—</span><span class="appeal-outof">/ 100</span></p>
+          <p class="appeal-disclaimer">
+            Heuristic estimate from a single photo. Not a fact about how people will treat you.
+          </p>
+        </div>
+        <div class="appeal-meta">
+          <p class="appeal-label">Confidence</p>
+          <p class="appeal-confidence" id="appeal-confidence">—</p>
+          <ul class="appeal-warnings" id="appeal-warnings"></ul>
+          <p class="appeal-tips-title">To get a cleaner reading</p>
+          <ul class="appeal-tips" id="appeal-tips"></ul>
+        </div>
+      </div>
+
+      <div class="appeal-breakdown">
+        <div class="appeal-col">
+          <p class="appeal-col-title">What helped</p>
+          <ol class="appeal-list" id="appeal-pros"></ol>
+        </div>
+        <div class="appeal-col">
+          <p class="appeal-col-title">What pulled it down</p>
+          <ol class="appeal-list" id="appeal-cons"></ol>
+        </div>
+      </div>
+
+      <details class="appeal-details">
+        <summary>How we score (transparent)</summary>
+        <div class="appeal-details-body">
+          <p class="appeal-details-text">
+            This uses a transparent weighted blend of symmetry + proportion/ratio cues. It does not use your photo outside this device.
+          </p>
+          <pre class="appeal-weights" id="appeal-weights"></pre>
+          <p class="appeal-details-text">
+            Sources used to choose factors and framing:
+          </p>
+          <ul class="appeal-cites" id="appeal-cites"></ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel panel-charts frame-minor">
+      <h2 class="panel-label">Telemetry</h2>
+      <div class="charts-row">
+        <div class="chart-box">
+          <p class="chart-eyebrow">Radar — index deviation</p>
+          <canvas id="radar-chart" aria-label="Radar chart comparing your ratios to ideals"></canvas>
+        </div>
+        <div class="chart-box chart-box-heatmap" id="section-heatmap">
+          <p class="chart-eyebrow">Corpus heatmap</p>
+          <p class="chart-caption">Bright: lower mirror residual. Dark: higher asymmetry signal.</p>
+          <canvas id="heatmap-canvas" class="heatmap"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-metrics frame-minor" id="section-dossier" aria-labelledby="metrics-title">
+      <h2 id="metrics-title" class="panel-label">Dossier — per-index readout</h2>
+      <div id="metrics-grid" class="metrics-grid"></div>
+    </section>
+
+    <section class="panel frame-minor marlon-panel" id="marlon-section" aria-labelledby="marlon-title">
+      <h2 id="marlon-title" class="marlon-title-user">Ask Marlon</h2>
+      <div
+        id="marlon-mode-banner"
+        class="marlon-mode-banner marlon-mode-banner--local"
+        role="status"
+        aria-live="polite"
+      >
+        Checking which assistant is active…
+      </div>
+      <div class="marlon-mode-row">
+        <label class="marlon-mode-label" for="marlon-ai-mode">How Marlon thinks</label>
+        <select id="marlon-ai-mode" class="marlon-select" aria-describedby="marlon-api-note">
+          <option value="local">On-device (free, private, works with any static server)</option>
+          <option value="claude">Claude Sonnet 4.5 (smarter replies — needs API key on server)</option>
+        </select>
+      </div>
+      <p class="marlon-api-note" id="marlon-api-note">
+        <strong>On-device:</strong> no API key, no network for chat — pattern-based answers only.
+        <strong> Claude:</strong> put your Anthropic key in the environment as <code>ANTHROPIC_API_KEY</code> and run
+        <code>npm start</code> from this folder (not plain Python). The browser never sees your key.
+      </p>
+      <p class="marlon-lede">
+        Questions about <strong>your scores</strong> in plain English — plus the math when you want it. On-device mode never sends data out;
+        Claude mode sends only your text + numeric summary to Anthropic’s API (still no image).
+      </p>
+      <p class="marlon-examples-intro">Tap to ask, or type anything below:</p>
+      <div class="marlon-starters" aria-label="Example questions">
+        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="Explain my results in plain English">Plain English summary</button>
+        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="How is harmony calculated?">How harmony works</button>
+        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="Explain the math behind the scores">The math explained</button>
+        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="How do I use FaceMetrics?">How to use this app</button>
+        <button type="button" class="marlon-chip marlon-chip--lite" data-marlon-ask="Am I using Claude right now?">Am I using Claude?</button>
+      </div>
+      <div id="marlon-thread" class="marlon-thread" role="log" aria-live="polite" aria-relevant="additions"></div>
+      <p class="marlon-after-analysis hidden" id="marlon-after-label">After your run — quick picks:</p>
+      <div id="marlon-quick" class="marlon-quick" hidden></div>
+      <form id="marlon-form" class="marlon-form" autocomplete="off">
+        <label class="visually-hidden" for="marlon-input">Your question</label>
+        <input
+          type="text"
+          id="marlon-input"
+          class="marlon-input"
+          placeholder="Ask anything — e.g. Why is symmetry lower? What’s the golden ratio row?"
+          enterkeyhint="send"
+          inputmode="text"
+        />
+        <button type="submit" class="btn btn-primary-cta marlon-submit" id="marlon-submit">Ask Marlon</button>
+      </form>
+    </section>
+  </main>
+
+  <nav class="mobile-dock" id="mobile-dock" aria-label="Quick actions">
+    <button type="button" class="mobile-dock-btn" id="dock-photo" aria-label="Choose photo from library">Library</button>
+    <button type="button" class="mobile-dock-btn" id="dock-selfie" aria-label="Take a photo with camera">Selfie</button>
+    <button type="button" class="mobile-dock-btn mobile-dock-btn--accent" id="dock-marlon" aria-label="Jump to Marlon">Marlon</button>
+    <button type="button" class="mobile-dock-btn" id="dock-results" aria-label="Jump to results">Results</button>
+    <button type="button" class="mobile-dock-btn" id="dock-appeal" aria-label="Jump to appeal">Appeal</button>
+  </nav>
+
+  <footer class="footer">
+    <p>FACEMETRICS · face-api.js 68-LANDMARK · EDUCATIONAL MORPHOMETRY ONLY — NOT MEDICAL OR PSYCHOLOGICAL ADVICE</p>
+  </footer>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script defer src="./marlon.js"></script>
+  <script defer src="./app.js"></script>
+</body>
+</html>
