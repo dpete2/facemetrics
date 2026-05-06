@@ -958,6 +958,50 @@ body {
   margin-right: auto;
 }
 
+/* Harmony tier badge (PSL-inspired bands; heuristic only) */
+.harmony-tier {
+  margin: 1rem auto 0;
+  max-width: 28rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.harmony-tier-badge {
+  margin: 0 0 0.35rem;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+}
+
+.harmony-tier-acronym {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--stroke-strong);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.harmony-tier-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.harmony-tier-note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .charts-row {
   display: grid;
   gap: 1rem;
@@ -1584,6 +1628,13 @@ body {
   color: var(--muted);
   letter-spacing: 0.02em;
   line-height: 1.5;
+}
+
+.appeal-tier {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .appeal-meta {

@@ -31,6 +31,10 @@
     preview: $("#preview"),
     overlay: $("#overlay"),
     harmonyValue: $("#harmony-value"),
+    harmonyTier: $("#harmony-tier"),
+    harmonyTierAcronym: $("#harmony-tier-acronym"),
+    harmonyTierTitle: $("#harmony-tier-title"),
+    harmonyTierNote: $("#harmony-tier-note"),
     ringProgress: $("#ring-progress"),
     metricsGrid: $("#metrics-grid"),
     heatmapCanvas: $("#heatmap-canvas"),
@@ -46,6 +50,7 @@
     btnAppeal: $("#btn-appeal"),
     sectionAppeal: $("#section-appeal"),
     appealScore: $("#appeal-score"),
+    appealTier: $("#appeal-tier"),
     appealConfidence: $("#appeal-confidence"),
     appealWarnings: $("#appeal-warnings"),
     appealTips: $("#appeal-tips"),
@@ -326,13 +331,13 @@
     const thirdsVariance =
       (Math.abs(uPct - idealThird) + Math.abs(mPct - idealThird) + Math.abs(lPct - idealThird)) / 3;
     // absolute tolerance for thirdsVariance (ideal=0): higher = less harsh
-    const thirdsMatch = scoreFromIdeal(thirdsVariance, 0, 6);
+    const thirdsMatch = scoreFromIdeal(thirdsVariance, 0, 4.5);
 
     const jawXs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((i) => p[i].x);
     const faceWidth = Math.max(...jawXs) - Math.min(...jawXs);
     const phiIdeal = 1.618;
     const phiMeasured = faceHeight / Math.max(faceWidth, 1);
-    const goldenMatch = scoreFromRatio(phiMeasured, phiIdeal, 28);
+    const goldenMatch = scoreFromRatio(phiMeasured, phiIdeal, 20);
 
     const eyeLOuter = p[36];
     const eyeLInner = p[39];
@@ -344,14 +349,14 @@
     const interocular = dist(eyeLInner, eyeRInner);
     const eyeSpacingRatio = avgEyeW > 0 ? interocular / avgEyeW : 1;
     const idealSpacingRatio = 1;
-    const eyeMatch = scoreFromRatio(eyeSpacingRatio, idealSpacingRatio, 45);
+    const eyeMatch = scoreFromRatio(eyeSpacingRatio, idealSpacingRatio, 34);
 
     const lipTopY = p[51].y;
     const dNoseLip = Math.max(lipTopY - subnasaleY, 0.01);
     const dLipChin = Math.max(chinY - lipTopY, 0.01);
     const nlRatio = dNoseLip / dLipChin;
     const idealNl = 0.55;
-    const nlMatch = scoreFromRatio(nlRatio, idealNl, 50);
+    const nlMatch = scoreFromRatio(nlRatio, idealNl, 38);
 
     const vL = { x: p[4].x - p[8].x, y: p[4].y - p[8].y };
     const vR = { x: p[12].x - p[8].x, y: p[12].y - p[8].y };
@@ -364,7 +369,7 @@
       jawAngleDeg = (Math.acos(cos) * 180) / Math.PI;
     }
     const idealJaw = 114;
-    const jawMatch = scoreFromIdeal(jawAngleDeg, idealJaw, 22);
+    const jawMatch = scoreFromIdeal(jawAngleDeg, idealJaw, 17);
 
     const midX = (p[27].x + (eyeLInner.x + eyeRInner.x) / 2) / 2;
     const symPairs = [
@@ -394,7 +399,7 @@
     const jawGonial = Math.abs(p[12].x - p[4].x);
     const cjRatio = jawGonial > 0 ? cheekSpread / jawGonial : 1;
     const idealCj = 1.08;
-    const cheekJawMatch = scoreFromRatio(cjRatio, idealCj, 35);
+    const cheekJawMatch = scoreFromRatio(cjRatio, idealCj, 26);
 
     const weights = {
       thirds: 0.15,
@@ -517,12 +522,12 @@
     const r = metrics.raw;
     // Subscores (0–100). Tolerances tuned to avoid collapsing to zero.
     const sSym = Math.round(metrics.rows.find((x) => x.id === "symmetry")?.match ?? 50);
-    const sPhi = Math.round(scoreFromRatio(r.phiMeasured, refs.phi, 32));
-    const sEyes = Math.round(scoreFromRatio(r.eyeSpacingRatio, refs.eyes, 55));
-    const sNl = Math.round(scoreFromRatio(r.nlRatio, refs.nl, 60));
-    const sJaw = Math.round(scoreFromIdeal(r.jawAngleDeg, refs.jawDeg, 24));
-    const sCj = Math.round(scoreFromRatio(r.cjRatio, refs.cj, 45));
-    const sThirds = Math.round(scoreFromIdeal(r.thirdsVariance, refs.thirdsVar, 7));
+    const sPhi = Math.round(scoreFromRatio(r.phiMeasured, refs.phi, 24));
+    const sEyes = Math.round(scoreFromRatio(r.eyeSpacingRatio, refs.eyes, 42));
+    const sNl = Math.round(scoreFromRatio(r.nlRatio, refs.nl, 46));
+    const sJaw = Math.round(scoreFromIdeal(r.jawAngleDeg, refs.jawDeg, 18));
+    const sCj = Math.round(scoreFromRatio(r.cjRatio, refs.cj, 34));
+    const sThirds = Math.round(scoreFromIdeal(r.thirdsVariance, refs.thirdsVar, 5));
 
     // Averageness proxy: distance from reference ratio vector (normalized).
     const v = [
@@ -531,10 +536,10 @@
       (r.nlRatio - refs.nl) / 0.28,
       (r.cjRatio - refs.cj) / 0.22,
       (r.jawAngleDeg - refs.jawDeg) / 16,
-      (r.thirdsVariance - refs.thirdsVar) / 6,
+      (r.thirdsVariance - refs.thirdsVar) / 5,
     ];
     const distNorm = Math.sqrt(v.reduce((a, x) => a + x * x, 0) / v.length);
-    const sAvg = Math.round(scoreFromIdeal(distNorm, 0, 1.15)); // absolute tolerance (ideal=0)
+    const sAvg = Math.round(scoreFromIdeal(distNorm, 0, 0.95)); // absolute tolerance (ideal=0)
 
     // Weights: aligned with “symmetry + averageness + proportions” framing.
     // (Rhodes 2006 for symmetry/averageness; UNL paper combines canons + symmetry + golden ratio.)
@@ -857,6 +862,15 @@
     if (!metrics || !metrics.appeal) return;
     const a = metrics.appeal;
     if (els.appealScore) els.appealScore.textContent = String(a.score);
+    if (els.appealTier) {
+      const t = tierFromHarmonyScore(a.score);
+      if (t) {
+        els.appealTier.hidden = false;
+        els.appealTier.textContent = `Tier (${t.acronym}): ${t.title}.`;
+      } else {
+        els.appealTier.hidden = true;
+      }
+    }
     if (els.appealConfidence) {
       const c = a.confidence.confidence;
       const label = c >= 80 ? `High (${c}%)` : c >= 55 ? `Medium (${c}%)` : `Low (${c}%)`;
@@ -924,6 +938,7 @@
 
     requestAnimationFrame(() => {
       const v = Math.round(score);
+      renderHarmonyTier(v);
       els.harmonyValue.classList.add("reveal");
       let t0 = null;
       const dur = 1100;
@@ -1084,6 +1099,63 @@
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  /**
+   * Map Harmony score (0–100) to illustrative tier bands informed by tier-list style tables.
+   * Not population percentiles—not clinical—and the bottom bracket uses LTN wording only (no harsh labels).
+   */
+  function tierFromHarmonyScore(score) {
+    const s = Math.round(Number(score));
+    if (Number.isNaN(s)) return null;
+    if (s >= 94)
+      return {
+        acronym: "Chad",
+        title: "Chad · top band",
+        note: "~top ~1% on this heuristic (very rare—strict geometry match).",
+        key: "chad",
+      };
+    if (s >= 88)
+      return {
+        acronym: "CL",
+        title: "Chadlite · strong band",
+        note: "~top ~1–5% heuristic band versus our proportional baselines.",
+        key: "chadlite",
+      };
+    if (s >= 80)
+      return {
+        acronym: "HTN",
+        title: "High-tier normie",
+        note: "Score ≥ 80 — strong match to multiple classical proportions in one photo.",
+        key: "htn",
+      };
+    if (s >= 50)
+      return {
+        acronym: "MTN",
+        title: "Mid-tier normie",
+        note: "Scores 50–79 — typical spread; lighting and pose still move numbers a lot.",
+        key: "mtn",
+      };
+    return {
+      acronym: "LTN",
+      title: "Low-tier normie",
+      note: "Below 50 — often angle, blur, facial size in frame, or proportion spread—not a verdict on anyone.",
+      key: "ltn",
+    };
+  }
+
+  function renderHarmonyTier(score) {
+    if (!els.harmonyTier) return;
+    const t = tierFromHarmonyScore(score);
+    if (!t) {
+      els.harmonyTier.classList.add("hidden");
+      return;
+    }
+    els.harmonyTier.classList.remove("hidden");
+    els.harmonyTier.dataset.tierKey = t.key;
+    if (els.harmonyTierAcronym) els.harmonyTierAcronym.textContent = t.acronym;
+    if (els.harmonyTierTitle) els.harmonyTierTitle.textContent = t.title;
+    if (els.harmonyTierNote) els.harmonyTierNote.textContent = t.note;
+  }
+
   // AI assistant removed
 
   function showAcquire() {
@@ -1200,6 +1272,11 @@
     }
     els.btnClear.disabled = true;
     lastMetrics = null;
+    if (els.harmonyTier) els.harmonyTier.classList.add("hidden");
+    if (els.appealTier) {
+      els.appealTier.hidden = true;
+      els.appealTier.textContent = "";
+    }
     // AI assistant removed
     if (els.appealScore) els.appealScore.textContent = "—";
     if (els.appealConfidence) els.appealConfidence.textContent = "—";
