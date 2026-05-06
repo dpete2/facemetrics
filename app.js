@@ -786,7 +786,7 @@
     const cctx = canvas.getContext("2d");
     cctx.putImageData(out, 0, 0);
 
-    cctx.strokeStyle = "rgba(255,255,255,0.25)";
+    cctx.strokeStyle = "rgba(0,0,0,0.22)";
     cctx.setLineDash([4, 4]);
     cctx.beginPath();
     cctx.moveTo(mxx, 0);
@@ -820,10 +820,10 @@
           {
             label: "Subject match %",
             data,
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            borderColor: "rgba(255, 255, 255, 0.95)",
-            pointBackgroundColor: "#ffffff",
-            pointBorderColor: "#000000",
+            backgroundColor: "rgba(12, 12, 14, 0.06)",
+            borderColor: "rgba(12, 12, 14, 0.88)",
+            pointBackgroundColor: "#1a1a1c",
+            pointBorderColor: "#f7f4ee",
             borderWidth: 1.5,
             fill: true,
           },
@@ -846,15 +846,15 @@
           r: {
             min: 0,
             max: 100,
-            ticks: { stepSize: 20, color: "#7a7a7a" },
-            grid: { color: "rgba(255,255,255,0.07)" },
-            angleLines: { color: "rgba(255,255,255,0.07)" },
-            pointLabels: { color: "#ececec", font: { size: 9, family: "JetBrains Mono, monospace" } },
+            ticks: { stepSize: 20, color: "#676767" },
+            grid: { color: "rgba(0,0,0,0.08)" },
+            angleLines: { color: "rgba(0,0,0,0.08)" },
+            pointLabels: { color: "#1a1a1a", font: { size: 9, family: "JetBrains Mono, monospace" } },
           },
         },
         plugins: {
           legend: {
-            labels: { color: "#7a7a7a", font: { size: 10, family: "JetBrains Mono, monospace" } },
+            labels: { color: "#4a4a4a", font: { size: 10, family: "JetBrains Mono, monospace" } },
           },
         },
       },
@@ -904,7 +904,7 @@
       const c = a.confidence.confidence;
       const label = c >= 80 ? `High (${c}%)` : c >= 55 ? `Medium (${c}%)` : `Low (${c}%)`;
       els.appealConfidence.textContent = label;
-      els.appealConfidence.style.color = c >= 80 ? "var(--ok)" : c >= 55 ? "#fff" : "#f0c4bc";
+      els.appealConfidence.style.color = c >= 80 ? "var(--ok)" : c >= 55 ? "var(--text)" : "var(--live)";
     }
 
     if (els.appealWarnings) {
@@ -1361,8 +1361,28 @@
 
   // AI assistant removed
 
+  function dismissEntrance() {
+    try {
+      sessionStorage.setItem("mogg_entrance", "1");
+    } catch (_) {}
+    document.documentElement.classList.add("entrance-complete");
+    const es = document.getElementById("entrance-screen");
+    if (es) es.setAttribute("aria-hidden", "true");
+  }
+
+  document.getElementById("btn-entrance-continue")?.addEventListener("click", dismissEntrance);
+  document.getElementById("entrance-menu")?.addEventListener("click", dismissEntrance);
+
+  if (document.documentElement.classList.contains("entrance-complete")) {
+    document.getElementById("entrance-screen")?.setAttribute("aria-hidden", "true");
+  }
+
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
+    if (!document.documentElement.classList.contains("entrance-complete")) {
+      dismissEntrance();
+      return;
+    }
     if (els.captureSession && !els.captureSession.classList.contains("hidden")) {
       closeCaptureSession();
       return;

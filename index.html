@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f16" />
+  <meta name="theme-color" content="#f2efe8" />
   <title>moggednyc — Craniofacial Analysis Engine</title>
   <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q8YT8FRP3E"></script>
@@ -15,10 +15,58 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <script>
+    try {
+      if (sessionStorage.getItem("mogg_entrance") === "1") document.documentElement.classList.add("entrance-complete");
+    } catch (_) {}
+  </script>
+
+  <div
+    id="entrance-screen"
+    class="entrance-screen"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="entrance-hero-heading"
+    aria-hidden="false"
+  >
+    <div class="entrance-blobs" aria-hidden="true">
+      <div class="entrance-blob entrance-blob--one"></div>
+      <div class="entrance-blob entrance-blob--two"></div>
+      <div class="entrance-blob entrance-blob--three"></div>
+    </div>
+    <div class="entrance-scrim" aria-hidden="true"></div>
+    <div class="entrance-card">
+      <header class="entrance-bar">
+        <span class="entrance-brand">moggednyc</span>
+        <button type="button" class="entrance-text-btn" id="entrance-menu" aria-label="Enter site">Menu</button>
+      </header>
+
+      <div class="entrance-hero" id="entrance-hero-heading">
+        <p class="entrance-line entrance-line--accent">THE ART OF</p>
+        <p class="entrance-line entrance-line--mega">
+          FACIAL<span class="entrance-insert" aria-hidden="true">&nbsp;(</span>
+          <span class="entrance-thumb" role="presentation">
+            <!-- abstract mark, not a real portrait -->
+            <span class="entrance-thumb-inner"></span>
+          </span>
+          <span class="entrance-insert" aria-hidden="true">)</span>
+          <span class="entrance-soft">proportion</span>
+        </p>
+        <p class="entrance-line entrance-line--mega">ANALYSIS</p>
+        <p class="entrance-row">
+          <span class="entrance-micro">We’re built for</span>
+          <span class="entrance-line entrance-line--sub">ON-DEVICE PRECISION</span>
+        </p>
+      </div>
+
+      <button type="button" class="entrance-continue" id="btn-entrance-continue">continue</button>
+    </div>
+  </div>
+
   <div id="wrong-server-banner" class="wrong-server-banner hidden" role="alert"></div>
 
   <div id="capture-session" class="capture-session hidden" role="dialog" aria-modal="true" aria-label="Capture">
@@ -84,7 +132,7 @@
   <header class="top-bar">
     <div class="brand-block">
       <span class="brand-main">MOGGEDNYC</span>
-      <span class="brand-sub">Facial proportion analysis · on-device</span>
+      <span class="brand-sub">Facial proportion mesh · on-device</span>
     </div>
     <div class="top-meta">
       <div class="top-meta-row">
@@ -195,8 +243,8 @@
           <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
             <defs>
               <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#ffffff" />
-                <stop offset="100%" stop-color="#9a9a9a" />
+                <stop offset="0%" stop-color="#1a1a1a" />
+                <stop offset="100%" stop-color="#8f8f8f" />
               </linearGradient>
             </defs>
             <circle class="ring-bg" cx="60" cy="60" r="52" />
