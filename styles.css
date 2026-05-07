@@ -148,6 +148,37 @@ html:has(#entrance-screen):not(.entrance-complete) body {
   opacity: 1;
 }
 
+.entrance-pill-hint {
+  margin: 0;
+  padding-bottom: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--muted);
+  text-align: center;
+  opacity: 0.72;
+  animation: entranceHintPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes entranceHintPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.78;
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entrance-pill-hint {
+    animation: none;
+  }
+}
+
 /* Overview · single framed ingress (matches panels, minimal noise) */
 .overview-minimal {
   display: flex;
@@ -1657,7 +1688,7 @@ body {
 }
 
 .harmony-value {
-  font-size: 1.65rem;
+  font-size: 1.92rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text);
@@ -1680,18 +1711,12 @@ body {
 }
 
 .harmony-max {
-  font-size: 0.95rem;
-  color: var(--muted);
-}
-
-.harmony-local-note {
-  margin: 0.85rem 0 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: lowercase;
-  text-align: center;
+  margin-top: -0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--muted-2);
+  text-transform: uppercase;
 }
 
 .harmony-caption {
@@ -1704,6 +1729,48 @@ body {
   margin-left: auto;
   margin-right: auto;
   line-height: 1.45;
+}
+
+.harmony-how {
+  margin: 0.85rem 0 0;
+}
+
+.harmony-how summary {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--muted-2);
+  cursor: pointer;
+  text-align: center;
+  list-style: none;
+}
+
+.harmony-how summary::-webkit-details-marker {
+  display: none;
+}
+
+.harmony-how summary::after {
+  content: " ▾";
+  opacity: 0.7;
+}
+
+.harmony-how[open] summary::after {
+  content: " ▴";
+}
+
+.harmony-how-body {
+  margin-top: 0.65rem;
+}
+
+.harmony-how-text {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: center;
+  max-width: 34rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Harmony tier badge (PSL-inspired bands; heuristic only) */
@@ -1738,17 +1805,11 @@ body {
 }
 
 .harmony-tier-title {
-  font-size: 0.98rem;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.01em;
+  display: none;
 }
 
 .harmony-tier-note {
-  margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  color: var(--muted);
+  display: none;
 }
 
 .charts-row {

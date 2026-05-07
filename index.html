@@ -44,11 +44,13 @@
         class="entrance-pill-hit"
         id="btn-entrance-pill"
         aria-label="Enter"
+        aria-describedby="entrance-pill-hint"
       >
         <svg class="entrance-mark entrance-mark--pill" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <rect x="8" y="48" width="104" height="24" rx="12" ry="12" fill="#000000" />
         </svg>
       </button>
+      <p class="entrance-pill-hint" id="entrance-pill-hint">click the pill</p>
     </div>
   </div>
 
@@ -126,9 +128,6 @@
     </div>
     <div class="top-meta">
       <div class="top-meta-row">
-        <span class="tier-pill hidden" id="header-tier-pill" title="Harmony tier (heuristic)">
-          <span class="tier-pill-label" id="header-tier-acronym">—</span>
-        </span>
       </div>
     </div>
   </header>
@@ -209,7 +208,7 @@
     <div id="tab-panel-results" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-results" hidden>
     <p id="results-takeaway" class="results-takeaway" role="status" aria-live="polite" hidden></p>
     <section class="panel panel-score frame-minor panel-soft" id="harmony-panel" aria-live="polite">
-      <h2 class="panel-label">Harmony</h2>
+      <h2 class="panel-label visually-hidden">Harmony</h2>
       <div class="harmony">
         <div class="harmony-ring" id="harmony-ring">
           <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
@@ -228,10 +227,18 @@
             <span class="harmony-max">/ 100</span>
           </div>
         </div>
-        <p class="harmony-local-note">locally based</p>
-        <p class="harmony-caption">
-          LTN &lt;50 · MTN 50–79 · HTN ≥80 · CL 88–93 · Chad ≥94
-        </p>
+        <details class="harmony-how">
+          <summary>How scoring works</summary>
+          <div class="harmony-how-body">
+            <p class="harmony-how-text">
+              Harmony is a weighted blend of the radar metrics (thirds, Φ, eye spacing, nose/lip/chin, jaw angle, symmetry, cheek vs jaw). It’s
+              computed on-device from a single photo, so lighting/pose/lens can move the number.
+            </p>
+            <p class="harmony-caption">
+              LLTN 0–29 · MLTN 30–39 · HLTN 40–49 · LMTN 50–59 · MMTN 60–69 · HMTN 70–79 · LHTN 80–82 · MHTN 83–85 · HHTN 86–87 · CL 88–93 · Chad 94–100
+            </p>
+          </div>
+        </details>
         <div id="harmony-tier" class="harmony-tier hidden" aria-live="polite">
           <p class="harmony-tier-badge">
             <span class="harmony-tier-acronym" id="harmony-tier-acronym">—</span>

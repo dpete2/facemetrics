@@ -83,6 +83,14 @@
       "This ratio is hypersensitive to how wide your face reads in-frame (hair, cheeks, beard shadow) and focal length / selfie warp. Prefer arms-length mirrors or low distortion if you revisit it.",
     eyes:
       "Interocular spacing changes with eyebrow tilt, sleepy lids, squinting, or heavy shadowing. Landmark dots can wander a pixel or two—that’s normal for TinyFaceDetector + 68 points.",
+    "nose-width":
+      "If you’re using a wide-angle selfie camera, the center of the frame (nose) can look larger. Step back, zoom slightly, or use a normal lens for cleaner comparisons.",
+    "nose-length":
+      "Bridge and nose-base landmarks shift with head pitch (chin up/down). Keep the camera level with your eyes for a more stable read.",
+    "brow-tilt":
+      "This is mostly a left-vs-right consistency check. One raised brow, squinting, or uneven lighting can swing it fast — try a neutral expression.",
+    "brow-height":
+      "This is mostly expression-driven (raised brows vs relaxed). Treat it as a photo-state cue, not a fixed trait.",
     "nose-lip":
       "Lip posture (rest vs slight smile vs tension) reshapes lip-to-chin length. Beard on the chin can bury the underlying menton; clean-shaven or consistent grooming gives cleaner reads.",
     jaw:
@@ -354,7 +362,7 @@
     const weakest = [...metrics.rows].sort((a, b) => a.match - b.match)[0];
     const parts = [];
     if (tier) {
-      parts.push(`Harmony reads as ${tier.title} (${tier.acronym}). ${tier.note}`);
+      parts.push(`Harmony reads as ${tier.acronym}.`);
     } else {
       parts.push(`Harmony sits at ${Math.round(metrics.harmony)}/100 on this heuristic.`);
     }
@@ -437,8 +445,8 @@
     const idealThird = 33.33;
     const thirdsVariance =
       (Math.abs(uPct - idealThird) + Math.abs(mPct - idealThird) + Math.abs(lPct - idealThird)) / 3;
-    // absolute tolerance for thirdsVariance (ideal=0): higher = less harsh
-    const thirdsMatch = scoreFromIdeal(thirdsVariance, 0, 4.5);
+    // absolute tolerance for thirdsVariance (ideal=0): higher = more forgiving
+    const thirdsMatch = scoreFromIdeal(thirdsVariance, 0, 7.5);
 
     const jawXs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((i) => p[i].x);
     const faceWidth = Math.max(...jawXs) - Math.min(...jawXs);
@@ -456,14 +464,42 @@
     const interocular = dist(eyeLInner, eyeRInner);
     const eyeSpacingRatio = avgEyeW > 0 ? interocular / avgEyeW : 1;
     const idealSpacingRatio = 1;
-    const eyeMatch = scoreFromRatio(eyeSpacingRatio, idealSpacingRatio, 34);
+    const eyeMatch = scoreFromRatio(eyeSpacingRatio, idealSpacingRatio, 48);
+
+    // Aesthetic proxies (experimental). These are *geometry cues* only.
+    const noseWidth = dist(p[31], p[35]);
+    const noseWidthRatio = faceWidth > 0 ? noseWidth / faceWidth : 0.22;
+    const idealNoseWidthRatio = 0.215;
+    const noseWidthMatch = scoreFromRatio(noseWidthRatio, idealNoseWidthRatio, 46);
+
+    const noseLen = dist(p[27], p[33]);
+    const noseLenRatio = faceHeight > 0 ? noseLen / faceHeight : 0.28;
+    const idealNoseLenRatio = 0.285;
+    const noseLenMatch = scoreFromRatio(noseLenRatio, idealNoseLenRatio, 40);
+
+    const browInnerL = p[21];
+    const browOuterL = p[17];
+    const browInnerR = p[22];
+    const browOuterR = p[26];
+    const browTiltL = angleDeg(browInnerL, browOuterL);
+    const browTiltR = angleDeg(browInnerR, browOuterR);
+    // Instead of scoring a specific “ideal” arch angle (expression-heavy),
+    // score left/right consistency (symmetry proxy).
+    const browTiltDiff = Math.abs(browTiltL - browTiltR);
+    const browTiltMatch = scoreFromIdeal(browTiltDiff, 0, 14); // absolute tolerance (ideal=0), degrees
+
+    const browCenterY = (p[19].y + p[24].y) / 2;
+    const eyeCenterY = (p[37].y + p[44].y) / 2;
+    const browHeightRatio = faceHeight > 0 ? Math.max(0, eyeCenterY - browCenterY) / faceHeight : 0.055;
+    const idealBrowHeightRatio = 0.055;
+    const browHeightMatch = scoreFromRatio(browHeightRatio, idealBrowHeightRatio, 55);
 
     const lipTopY = p[51].y;
     const dNoseLip = Math.max(lipTopY - subnasaleY, 0.01);
     const dLipChin = Math.max(chinY - lipTopY, 0.01);
     const nlRatio = dNoseLip / dLipChin;
     const idealNl = 0.55;
-    const nlMatch = scoreFromRatio(nlRatio, idealNl, 38);
+    const nlMatch = scoreFromRatio(nlRatio, idealNl, 56);
 
     const vL = { x: p[4].x - p[8].x, y: p[4].y - p[8].y };
     const vR = { x: p[12].x - p[8].x, y: p[12].y - p[8].y };
@@ -532,6 +568,10 @@
       raw: {
         phiMeasured,
         eyeSpacingRatio,
+        noseWidthRatio,
+        noseLenRatio,
+        browTiltDiff,
+        browHeightRatio,
         nlRatio,
         jawAngleDeg,
         cjRatio,
@@ -564,6 +604,42 @@
           match: eyeMatch,
           explain:
             "One stylized ideal spaces eyes so inner-eye distance equals about one eye width—the ‘one eye apart’ rule of thumb.",
+        },
+        {
+          id: "nose-width",
+          title: "Nose width (proxy)",
+          measured: noseWidthRatio.toFixed(3),
+          ideal: `~${idealNoseWidthRatio} (alar width ÷ face width)`,
+          match: noseWidthMatch,
+          explain:
+            "A simple frontal proxy: nose alar width relative to overall face width. Lighting, lens, and expression can bias this.",
+        },
+        {
+          id: "nose-length",
+          title: "Nose length (proxy)",
+          measured: noseLenRatio.toFixed(3),
+          ideal: `~${idealNoseLenRatio} (bridge-to-base ÷ face height)`,
+          match: noseLenMatch,
+          explain:
+            "A coarse vertical proxy from brow bridge to nose base, normalized by face height. Not a 3‑D nose ‘shape’ score.",
+        },
+        {
+          id: "brow-tilt",
+          title: "Brow tilt symmetry (proxy)",
+          measured: `${browTiltDiff.toFixed(1)}°`,
+          ideal: "~0° (left ≈ right)",
+          match: browTiltMatch,
+          explain:
+            "Compares left vs right brow tilt. Big differences are often just expression or lighting, but consistent tilt can read as more balanced.",
+        },
+        {
+          id: "brow-height",
+          title: "Brow height (proxy)",
+          measured: browHeightRatio.toFixed(3),
+          ideal: `~${idealBrowHeightRatio} (eye-to-brow gap ÷ face height)`,
+          match: browHeightMatch,
+          explain:
+            "Approximate brow-to-eye gap relative to face height. Squinting or raising brows changes this instantly.",
         },
         {
           id: "nose-lip",
@@ -882,8 +958,10 @@
       symmetry: "Symmetry",
       "cheek-jaw": "Cheek vs jaw",
     };
-    const labels = metrics.rows.map((r) => short[r.id] || r.title.slice(0, 14));
-    const data = metrics.rows.map((r) => Math.round(r.match));
+    const radarIds = ["thirds", "golden", "eyes", "nose-lip", "jaw", "symmetry", "cheek-jaw"];
+    const radarRows = metrics.rows.filter((r) => radarIds.includes(r.id));
+    const labels = radarRows.map((r) => short[r.id] || r.title.slice(0, 14));
+    const data = radarRows.map((r) => Math.round(r.match));
 
     if (radarChartInstance) {
       radarChartInstance.destroy();
@@ -1269,37 +1347,36 @@
     if (s >= 94)
       return {
         acronym: "Chad",
-        title: "Chad · top band",
-        note: "~top ~1% on this heuristic (very rare—strict geometry match).",
+        title: "Chad",
+        note: "94–100",
         key: "chad",
       };
     if (s >= 88)
       return {
         acronym: "CL",
-        title: "Chadlite · strong band",
-        note: "~top ~1–5% heuristic band versus our proportional baselines.",
-        key: "chadlite",
+        title: "CL",
+        note: "88–93",
+        key: "cl",
       };
+    if (s >= 86)
+      return { acronym: "HHTN", title: "HHTN", note: "86–87", key: "hhtn" };
+    if (s >= 83)
+      return { acronym: "MHTN", title: "MHTN", note: "83–85", key: "mhtn" };
     if (s >= 80)
-      return {
-        acronym: "HTN",
-        title: "High-tier normie",
-        note: "Score ≥ 80 — strong match to multiple classical proportions in one photo.",
-        key: "htn",
-      };
+      return { acronym: "LHTN", title: "LHTN", note: "80–82", key: "lhtn" };
+
+    if (s >= 70)
+      return { acronym: "HMTN", title: "HMTN", note: "70–79", key: "hmtn" };
+    if (s >= 60)
+      return { acronym: "MMTN", title: "MMTN", note: "60–69", key: "mmtn" };
     if (s >= 50)
-      return {
-        acronym: "MTN",
-        title: "Mid-tier normie",
-        note: "Scores 50–79 — typical spread; lighting and pose still move numbers a lot.",
-        key: "mtn",
-      };
-    return {
-      acronym: "LTN",
-      title: "Low-tier normie",
-      note: "Below 50 — often angle, blur, facial size in frame, or proportion spread—not a verdict on anyone.",
-      key: "ltn",
-    };
+      return { acronym: "LMTN", title: "LMTN", note: "50–59", key: "lmtn" };
+
+    if (s >= 40)
+      return { acronym: "HLTN", title: "HLTN", note: "40–49", key: "hltn" };
+    if (s >= 30)
+      return { acronym: "MLTN", title: "MLTN", note: "30–39", key: "mltn" };
+    return { acronym: "LLTN", title: "LLTN", note: "0–29", key: "lltn" };
   }
 
   function renderHarmonyTier(score) {
