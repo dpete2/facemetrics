@@ -19,8 +19,19 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <svg class="defs-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="aura-displace" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+        <feTurbulence type="turbulence" baseFrequency="0.124" numOctaves="3" stitchTiles="stitch" seed="48" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
   <div id="click-flash-root" class="click-flash-root" aria-hidden="true"></div>
-  <div id="cursor-aura" class="cursor-aura" aria-hidden="true"></div>
+  <div id="cursor-aura" class="cursor-aura" aria-hidden="true">
+    <span class="cursor-aura__bend"></span>
+    <span class="cursor-aura__pixel"></span>
+  </div>
   <script>
     try {
       if (sessionStorage.getItem("mogg_entrance") === "1") document.documentElement.classList.add("entrance-complete");

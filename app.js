@@ -1438,18 +1438,21 @@
     flush();
   }
 
+  let swipeNextLeft = false;
+
   function flashClickAt(cx, cy) {
     const root = document.getElementById("click-flash-root");
     if (!root) return;
-    const ring = document.createElement("span");
-    ring.className = "click-flash";
-    ring.style.left = `${cx}px`;
-    ring.style.top = `${cy}px`;
-    root.appendChild(ring);
-    ring.addEventListener(
+    const ribbon = document.createElement("span");
+    swipeNextLeft = !swipeNextLeft;
+    ribbon.className = swipeNextLeft ? "click-wave click-wave--left" : "click-wave click-wave--down";
+    ribbon.style.setProperty("--ribbon-x", `${cx}px`);
+    ribbon.style.setProperty("--ribbon-y", `${cy}px`);
+    root.appendChild(ribbon);
+    ribbon.addEventListener(
       "animationend",
       () => {
-        ring.remove();
+        ribbon.remove();
       },
       { once: true }
     );
@@ -1457,6 +1460,7 @@
 
   function initClickFlashes() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    swipeNextLeft = false;
     document.addEventListener(
       "click",
       (e) => {

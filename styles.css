@@ -265,39 +265,83 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Cursor halo (fine pointer only; disabled when reduced-motion) */
+.defs-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Click ribbons: bold swipe vs pull-down (fine motion only) */
 .click-flash-root {
   position: fixed;
   inset: 0;
   z-index: 9000;
   pointer-events: none;
-  overflow: hidden;
+  overflow: visible;
 }
 
-.click-flash {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  margin: -6px 0 0 -6px;
-  border-radius: 50%;
+.click-wave {
+  position: fixed;
+  left: var(--ribbon-x, 0px);
+  top: var(--ribbon-y, 0px);
   pointer-events: none;
-  background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.25) 45%, transparent 65%);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.35),
-    0 0 28px rgba(255, 255, 255, 0.6);
-  animation: click-flash-out 580ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+  mix-blend-mode: soft-light;
+  transform-origin: center center;
 }
 
-@keyframes click-flash-out {
+.click-wave--left {
+  width: min(620vw, 5200px);
+  height: 92px;
+  margin-left: 0;
+  margin-top: 0;
+  background: linear-gradient(
+    104deg,
+    rgba(255, 255, 255, 0) 6%,
+    rgba(255, 255, 255, 0.98) 40%,
+    rgba(246, 242, 234, 0.62) 56%,
+    rgba(255, 255, 255, 0) 93%
+  );
+  box-shadow: 0 0 72px rgba(255, 255, 255, 0.55);
+  filter: contrast(1.22) saturate(1.1) brightness(1.06);
+  animation: clickSwipeLeftRibbon 0.56s cubic-bezier(0.25, 0.82, 0.24, 1) forwards;
+}
+
+.click-wave--down {
+  width: min(544px, 96vw);
+  height: max(520vh, 2800px);
+  background: linear-gradient(
+    178deg,
+    rgba(255, 255, 255, 0) 10%,
+    rgba(252, 250, 244, 0.95) 42%,
+    rgba(239, 234, 224, 0.52) 60%,
+    rgba(255, 255, 255, 0) 93%
+  );
+  box-shadow: 0 0 56px rgba(255, 255, 255, 0.48);
+  filter: contrast(1.18);
+  animation: clickPullDownRibbon 0.6s cubic-bezier(0.28, 0.74, 0.22, 1) forwards;
+}
+
+@keyframes clickSwipeLeftRibbon {
   from {
-    opacity: 1;
-    transform: scale(0.85);
-    filter: blur(0);
+    opacity: 0.97;
+    transform: translate(-50%, -50%) translateX(-4vw) skewX(-3deg);
   }
   to {
     opacity: 0;
-    transform: scale(18);
-    filter: blur(2px);
+    transform: translate(-50%, -50%) translateX(-138vw) skewX(-1.2deg);
+  }
+}
+
+@keyframes clickPullDownRibbon {
+  from {
+    opacity: 0.96;
+    transform: translate(-50%, -50%) translateY(-68vh) scaleX(1.08);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(138vh) scaleX(1);
   }
 }
 
@@ -305,23 +349,53 @@ html {
   position: fixed;
   left: 0;
   top: 0;
-  width: min(560px, 140vw);
-  height: min(560px, 140vw);
-  margin: calc(min(560px, 140vw) / -2);
+  --cursor-aura-size: clamp(138px, 18vmin, 198px);
+  width: var(--cursor-aura-size);
+  height: var(--cursor-aura-size);
+  margin: calc(var(--cursor-aura-size) / -2) 0 0 calc(var(--cursor-aura-size) / -2);
   pointer-events: none;
   z-index: 455;
   border-radius: 50%;
+  isolation: isolate;
   opacity: 0;
-  transition: opacity 240ms ease;
-  background:
-    radial-gradient(circle closest-side, rgba(255, 252, 248, 0.55), rgba(255, 255, 255, 0.15) 38%, transparent 72%);
-  filter: blur(18px);
-  mix-blend-mode: soft-light;
+  transition: opacity 180ms ease;
   will-change: transform;
 }
 
 .cursor-aura.is-active {
   opacity: 1;
+}
+
+.cursor-aura__bend {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  backdrop-filter: blur(4px) contrast(172%) saturate(195%) brightness(1.1) hue-rotate(-6deg);
+  -webkit-backdrop-filter: blur(4px) contrast(172%) saturate(195%) brightness(1.1) hue-rotate(-6deg);
+  mask-image: radial-gradient(circle closest-side, #000 0%, #000 52%, transparent 78%);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, #000 52%, transparent 78%);
+  filter: url(#aura-displace);
+  mix-blend-mode: normal;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22) inset, 0 0 52px rgba(255, 255, 255, 0.2);
+}
+
+.cursor-aura__pixel {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.82;
+  image-rendering: pixelated;
+  background-size: 6px 6px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.26) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.26) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(240, 236, 228, 0.14) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(90deg, rgba(238, 234, 224, 0.12) 0 2px, transparent 2px 4px);
+  mask-image: radial-gradient(circle closest-side, #000 0%, #000 54%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, #000 54%, transparent 80%);
 }
 
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
@@ -331,9 +405,10 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .click-flash {
-    animation: none;
+  .click-wave {
+    animation: none !important;
     opacity: 0 !important;
+    display: none !important;
   }
 }
 
