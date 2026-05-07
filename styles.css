@@ -385,16 +385,6 @@ html:has(#entrance-screen):not(.entrance-complete) body {
   color: var(--muted-2);
 }
 
-.footer--minimal .footer-privacy a {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.footer--minimal .footer-privacy a:hover {
-  color: var(--muted);
-}
-
 /* Standalone legal pages (privacy.html) */
 .legal-body {
   min-height: 100vh;
@@ -537,12 +527,6 @@ html:has(#entrance-screen):not(.entrance-complete) body {
 
 .legal-doc a[href]:hover {
   opacity: 0.8;
-}
-
-.notices-inline-link {
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* Global polish */
