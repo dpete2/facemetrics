@@ -1446,8 +1446,7 @@
     if (es) es.setAttribute("aria-hidden", "true");
   }
 
-  document.getElementById("btn-entrance-continue")?.addEventListener("click", dismissEntrance);
-  document.getElementById("entrance-menu")?.addEventListener("click", dismissEntrance);
+  document.getElementById("btn-entrance-pill")?.addEventListener("click", dismissEntrance);
 
   if (document.documentElement.classList.contains("entrance-complete")) {
     document.getElementById("entrance-screen")?.setAttribute("aria-hidden", "true");
@@ -1455,10 +1454,7 @@
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    if (!document.documentElement.classList.contains("entrance-complete")) {
-      dismissEntrance();
-      return;
-    }
+    if (!document.documentElement.classList.contains("entrance-complete")) return;
     if (els.captureSession && !els.captureSession.classList.contains("hidden")) {
       closeCaptureSession();
       return;
