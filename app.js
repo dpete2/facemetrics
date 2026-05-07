@@ -60,7 +60,21 @@
     scanProtocolTrack: $("#scan-protocol-track"),
   };
 
-  const TAB_ORDER = ["overview", "scan", "results", "charts", "appeal"];
+  const TAB_ORDER = ["overview", "scan", "results", "charts", "appeal", "notices", "ben"];
+
+  /** One-liners after a successful run (status line). */
+  const FUN_LINES = [
+    "The mesh complied.",
+    "Landmarks nominal. Ish.",
+    "Your browser did the math. Fancy.",
+    "On-device dossier unlocked.",
+    "No cloud was harmed.",
+    "Symmetry regrets nothing.",
+    "Angles submitted for review.",
+    "Protocol vibes only.",
+    "Heatmap enters the chat.",
+    "Straight-on propaganda.",
+  ];
 
   const METRIC_DEEP_NOTE = {
     thirds:
@@ -93,6 +107,8 @@
 
   function setActiveTab(name) {
     if (!TAB_ORDER.includes(name)) return;
+    document.documentElement.classList.toggle("theme-ben-red", name === "ben");
+
     TAB_ORDER.forEach((t) => {
       const on = t === name;
       const tabBtn = document.querySelector(`button.tab-btn[data-tab="${t}"]`);
@@ -1111,7 +1127,8 @@
     lastMetrics = metrics;
     // AI assistant removed
     renderAppeal(metrics);
-    setStatus("Done — see Results.");
+    const funLine = FUN_LINES[Math.floor(Math.random() * FUN_LINES.length)];
+    setStatus(`Done — see Results. · ${funLine}`);
     setActiveTab("results");
     hideScan(true);
   }
@@ -1316,6 +1333,7 @@
   document.querySelectorAll("button.tab-btn[data-tab]").forEach((btn) => {
     btn.addEventListener("click", () => setActiveTab(btn.getAttribute("data-tab")));
   });
+  document.getElementById("btn-ben-exit")?.addEventListener("click", () => setActiveTab("overview"));
   document.querySelectorAll("[data-go-tab]").forEach((el) => {
     el.addEventListener("click", () => {
       const tab = el.getAttribute("data-go-tab");
@@ -1453,8 +1471,30 @@
   }
 
   document.addEventListener("keydown", (e) => {
+    const t = e.target;
+    const inField =
+      t &&
+      typeof t.closest === "function" &&
+      t.closest("input, textarea, select, [contenteditable='true']");
+    const BEN_CODE = "fuck ben";
+    if (!inField && !e.metaKey && !e.ctrlKey && !e.altKey && e.key.length === 1) {
+      /** @type {Window & { __moggBenBuf?: string }} */
+      const w = window;
+      w.__moggBenBuf = ((w.__moggBenBuf || "") + e.key.toLowerCase()).slice(-BEN_CODE.length);
+      if (w.__moggBenBuf === BEN_CODE) {
+        w.__moggBenBuf = "";
+        if (document.documentElement.classList.contains("entrance-complete")) {
+          setActiveTab("ben");
+        }
+      }
+    }
+
     if (e.key !== "Escape") return;
     if (!document.documentElement.classList.contains("entrance-complete")) return;
+    if (document.documentElement.classList.contains("theme-ben-red")) {
+      setActiveTab("overview");
+      return;
+    }
     if (els.captureSession && !els.captureSession.classList.contains("hidden")) {
       closeCaptureSession();
       return;

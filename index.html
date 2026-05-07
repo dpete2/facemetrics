@@ -139,6 +139,7 @@
     <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-results" data-tab="results">Results</button>
     <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-charts" data-tab="charts">Charts</button>
     <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-appeal" data-tab="appeal">Appeal</button>
+    <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-btn-notices" data-tab="notices">Notices</button>
   </nav>
 
   <main class="shell shell--tabs">
@@ -159,7 +160,7 @@
     <section class="panel panel-input frame-minor" aria-labelledby="input-title" id="section-acquire">
       <h2 id="input-title" class="panel-label">Add a photo</h2>
 
-      <p class="mobile-hint">Dock: Home · Scan · Results · Charts · Appeal.</p>
+      <p class="mobile-hint">Dock: Home · Scan · Results · Charts · Appeal · Notices.</p>
 
       <div
         id="dropzone"
@@ -310,6 +311,77 @@
     </section>
     </div>
 
+    <div id="tab-panel-notices" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-notices" hidden>
+      <section class="panel frame-minor notices-panel" aria-labelledby="notices-heading">
+        <h2 id="notices-heading" class="panel-label">Notices</h2>
+        <p class="notices-lede">
+          Important disclaimers about moggednyc. This is educational software, not professional advice—read before you rely on scores or share results.
+        </p>
+        <div class="notices-sections">
+          <section class="notices-block" aria-labelledby="notice-nonmedical">
+            <h3 id="notice-nonmedical" class="notices-block-title">Not medical advice</h3>
+            <p class="notices-block-text">
+              moggednyc does not diagnose, treat, predict, or assess any medical or mental-health condition. It is not for clinical,
+              dental, surgical, orthodontic, dermatological, or therapeutic use. Ask a licensed professional for health decisions.
+            </p>
+          </section>
+          <section class="notices-block" aria-labelledby="notice-educational">
+            <h3 id="notice-educational" class="notices-block-title">Educational only</h3>
+            <p class="notices-block-text">
+              Outputs are heuristic summaries from frontal landmarks—approximate, contextual, and for curiosity or self-study. They are not
+              a certification, hiring criterion, dating verdict, or objective measure of worth.
+            </p>
+          </section>
+          <section class="notices-block" aria-labelledby="notice-data">
+            <h3 id="notice-data" class="notices-block-title">Your photo &amp; network</h3>
+            <p class="notices-block-text">
+              Facial analysis runs in your browser after this page loads. We do not ask you to upload your image to moggednyc servers for that
+              step. Ordinary website tooling may apply: analytics (for example traffic measurement), fonts and scripts hosted on CDNs, and face
+              model files loaded from remote hosts—those providers may see typical request metadata consistent with browsing any site.
+            </p>
+          </section>
+          <section class="notices-block" aria-labelledby="notice-accuracy">
+            <h3 id="notice-accuracy" class="notices-block-title">Accuracy &amp; fairness</h3>
+            <p class="notices-block-text">
+              Scores drift with pose, lighting, focal length (selfie warp), occlusion, grooming, facial expression, and model error. Classical
+              “ideals” in the charts are simplifying conventions—not universal standards. Do not use this app to harass, bully, discriminate, or
+              rank people without consent.
+            </p>
+          </section>
+          <section class="notices-block" aria-labelledby="notice-liability">
+            <h3 id="notice-liability" class="notices-block-title">No warranty</h3>
+            <p class="notices-block-text">
+              moggednyc is provided “as is” without warranties of accuracy, reliability, fitness for a purpose, or non‑infringement. To the fullest
+              extent allowed by law, operators and contributors are not liable for reliance on results or misuse of the app.
+            </p>
+          </section>
+          <section class="notices-block" aria-labelledby="notice-contact">
+            <h3 id="notice-contact" class="notices-block-title">Privacy &amp; contact</h3>
+            <p class="notices-block-text">
+              Full details: see the <a href="./privacy.html" class="notices-inline-link">Privacy Policy</a>. Replace the contact placeholder in that document
+              with a working email before you broadly promote the site.
+            </p>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <div
+      id="tab-panel-ben"
+      class="tab-panel tab-panel-ben"
+      role="tabpanel"
+      aria-labelledby="ben-panel-title"
+      hidden
+    >
+      <div class="ben-shell">
+        <article class="ben-card panel frame-minor">
+          <h2 id="ben-panel-title" class="ben-heading">Wrong neighborhood.</h2>
+          <p class="ben-sub">Everything’s local. Everything’s angry. Ben mode.</p>
+          <button type="button" class="btn btn-outline-cta" id="btn-ben-exit">Back to sanity</button>
+        </article>
+      </div>
+    </div>
+
   </main>
 
   <nav class="mobile-dock" id="mobile-dock" aria-label="Sections">
@@ -318,10 +390,13 @@
     <button type="button" class="mobile-dock-btn" id="dock-results" data-tab="results" aria-label="Results">Results</button>
     <button type="button" class="mobile-dock-btn" id="dock-charts" data-tab="charts" aria-label="Charts">Charts</button>
     <button type="button" class="mobile-dock-btn" id="dock-appeal" data-tab="appeal" aria-label="Appeal">Appeal</button>
+    <button type="button" class="mobile-dock-btn" id="dock-notices" data-tab="notices" aria-label="Notices">Notices</button>
   </nav>
 
   <footer class="footer footer--minimal">
-    <p class="footer-privacy">Uploads Do Not Leave Your Device</p>
+    <p class="footer-privacy">
+      Uploads Do Not Leave Your Device · <a href="./privacy.html">Privacy Policy</a>
+    </p>
   </footer>
 
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
