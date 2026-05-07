@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <div id="click-flash-root" class="click-flash-root" aria-hidden="true"></div>
+  <div id="cursor-aura" class="cursor-aura" aria-hidden="true"></div>
   <script>
     try {
       if (sessionStorage.getItem("mogg_entrance") === "1") document.documentElement.classList.add("entrance-complete");
@@ -57,7 +59,7 @@
   <div id="capture-session" class="capture-session hidden" role="dialog" aria-modal="true" aria-label="Capture">
     <div class="capture-session-bg" aria-hidden="true"></div>
     <button type="button" class="capture-dismiss" id="capture-session-cancel" aria-label="Close">×</button>
-    <div class="capture-session-inner">
+    <div class="capture-session-inner capture-session-sheet">
       <p class="capture-lede">Line up straight-on, then tap the shutter.</p>
       <div class="capture-viewport-shell">
         <div class="capture-viewport">

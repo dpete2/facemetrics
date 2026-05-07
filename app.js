@@ -1403,5 +1403,78 @@
     hideScan(false);
   });
 
+  function initCursorAura() {
+    const el = document.getElementById("cursor-aura");
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    let px = innerWidth / 2;
+    let py = innerHeight / 2;
+    let rafId = 0;
+    let on = false;
+    function flush() {
+      rafId = 0;
+      el.style.transform = `translate(${px}px, ${py}px)`;
+    }
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        if (e.pointerType !== "mouse") return;
+        px = e.clientX;
+        py = e.clientY;
+        if (!on) {
+          on = true;
+          el.classList.add("is-active");
+        }
+        if (!rafId) rafId = requestAnimationFrame(flush);
+      },
+      { passive: true }
+    );
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible") {
+        el.classList.remove("is-active");
+      }
+    });
+    flush();
+  }
+
+  function flashClickAt(cx, cy) {
+    const root = document.getElementById("click-flash-root");
+    if (!root) return;
+    const ring = document.createElement("span");
+    ring.className = "click-flash";
+    ring.style.left = `${cx}px`;
+    ring.style.top = `${cy}px`;
+    root.appendChild(ring);
+    ring.addEventListener(
+      "animationend",
+      () => {
+        ring.remove();
+      },
+      { once: true }
+    );
+  }
+
+  function initClickFlashes() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.addEventListener(
+      "click",
+      (e) => {
+        const target = e.target;
+        const tag =
+          target && target.closest
+            ? target.closest("button:not(:disabled), .link-tab, .dropzone:not(:disabled)")
+            : null;
+        if (!tag) return;
+        if (tag.id === "file-input") return;
+        flashClickAt(e.clientX, e.clientY);
+      },
+      false
+    );
+  }
+
+  initCursorAura();
+  initClickFlashes();
+
   setStatus("");
 })();

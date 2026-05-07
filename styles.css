@@ -96,7 +96,7 @@ html:not(.entrance-complete) body {
   padding: 0.25rem;
   margin: -0.25rem;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.13s ease;
 }
 
 .entrance-text-btn:hover {
@@ -146,7 +146,7 @@ html:not(.entrance-complete) body {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 6px;
-  transition: opacity 0.18s ease;
+  transition: opacity 0.18s ease, transform 0.13s ease;
 }
 
 .entrance-continue:hover {
@@ -181,7 +181,10 @@ html:not(.entrance-complete) body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.18s ease, border-color 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.14s ease;
 }
 
 .btn-ghost-main:hover:not(:disabled) {
@@ -210,7 +213,10 @@ html:not(.entrance-complete) body {
   cursor: pointer;
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.14s ease;
 }
 
 .link-tab:hover {
@@ -259,6 +265,99 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Cursor halo (fine pointer only; disabled when reduced-motion) */
+.click-flash-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.click-flash {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.25) 45%, transparent 65%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.35),
+    0 0 28px rgba(255, 255, 255, 0.6);
+  animation: click-flash-out 580ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes click-flash-out {
+  from {
+    opacity: 1;
+    transform: scale(0.85);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(18);
+    filter: blur(2px);
+  }
+}
+
+.cursor-aura {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: min(560px, 140vw);
+  height: min(560px, 140vw);
+  margin: calc(min(560px, 140vw) / -2);
+  pointer-events: none;
+  z-index: 455;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 240ms ease;
+  background:
+    radial-gradient(circle closest-side, rgba(255, 252, 248, 0.55), rgba(255, 255, 255, 0.15) 38%, transparent 72%);
+  filter: blur(18px);
+  mix-blend-mode: soft-light;
+  will-change: transform;
+}
+
+.cursor-aura.is-active {
+  opacity: 1;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor-aura {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .click-flash {
+    animation: none;
+    opacity: 0 !important;
+  }
+}
+
+.tab-btn:active:not(:disabled),
+.link-tab:active,
+.btn-ghost-main:active:not(:disabled),
+.entrance-text-btn:active,
+.entrance-continue:active,
+.capture-chip:active,
+.capture-dismiss:active {
+  transform: translateY(0.5px) scale(0.985);
+}
+
+.tab-btn:active:not(:disabled),
+.link-tab:active,
+.btn-ghost-main:active:not(:disabled),
+.entrance-text-btn:active,
+.entrance-continue:active {
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease,
+    color 0.12s ease;
+}
+
 .wrong-server-banner {
   display: none;
   margin: 0;
@@ -278,10 +377,8 @@ html {
   display: block;
 }
 
-/* Capture session (distinct from legacy grid/hud concepts) */
+/* Capture session — editorial light palette (matches main UI) */
 .capture-session {
-  --capture-glow: rgba(255, 180, 95, 0.35);
-
   position: fixed;
   inset: 0;
   z-index: 215;
@@ -291,7 +388,7 @@ html {
   justify-content: center;
   padding: 1rem 1rem max(1.25rem, env(safe-area-inset-bottom));
   font-family: var(--font);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text);
 }
 
 .capture-session:not(.hidden) {
@@ -301,10 +398,15 @@ html {
 .capture-session-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(120% 80% at 50% -10%, rgba(88, 86, 180, 0.35), transparent 52%),
-    radial-gradient(100% 60% at 100% 100%, rgba(10, 132, 255, 0.12), transparent 50%),
-    linear-gradient(165deg, #0e0c14 0%, #12101c 42%, #0a090f 100%);
+  background-color: rgba(229, 225, 216, 0.88);
+  background-image:
+    radial-gradient(900px 520px at 12% -5%, rgba(220, 180, 160, 0.2), transparent 58%),
+    radial-gradient(800px 480px at 92% 8%, rgba(190, 200, 220, 0.16), transparent 55%),
+    linear-gradient(rgba(0, 0, 0, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.022) 1px, transparent 1px);
+  background-size: auto, auto, 88px 88px, 88px 88px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .capture-dismiss {
@@ -312,22 +414,25 @@ html {
   top: max(1rem, env(safe-area-inset-top));
   right: max(1rem, env(safe-area-inset-right));
   z-index: 5;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(20, 18, 32, 0.55);
-  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  color: var(--text);
   font-size: 1.35rem;
   line-height: 1;
   cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: background 0.15s ease, border-color 0.15s ease;
+  box-shadow: var(--shadow);
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.14s ease;
 }
 
 .capture-dismiss:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(40, 36, 58, 0.65);
+  border-color: var(--stroke-strong);
 }
 
 .capture-session-inner {
@@ -336,33 +441,42 @@ html {
   width: min(440px, 100%);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.1rem;
+}
+
+.capture-session-sheet {
+  padding: 1.15rem 1.25rem 1.35rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--stroke);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .capture-lede {
   margin: 0;
   text-align: center;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
-  letter-spacing: 0.01em;
+  color: var(--muted);
+  letter-spacing: -0.01em;
 }
 
 .capture-viewport-shell {
-  padding: 3px;
-  border-radius: 22px;
-  background: linear-gradient(145deg, rgba(255, 200, 140, 0.45), rgba(80, 120, 255, 0.25), rgba(255, 255, 255, 0.12));
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  padding: 1px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--stroke-strong);
+  background: var(--elevated);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset;
 }
 
 .capture-viewport {
-  border-radius: 19px;
+  border-radius: calc(var(--radius-sm) - 1px);
   overflow: hidden;
   aspect-ratio: 3 / 4;
   max-height: min(58vh, 520px);
-  background: #08070c;
+  background: #d8d3c9;
 }
 
 .capture-session-video {
@@ -381,13 +495,11 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.85rem;
-  padding: 0.65rem 1rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  gap: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: transparent;
+  border: 1px dashed rgba(12, 12, 12, 0.12);
 }
 
 .capture-chip {
@@ -396,26 +508,35 @@ html {
   align-items: center;
   gap: 0.35rem;
   min-width: 3.75rem;
-  padding: 0.5rem 0.35rem;
+  padding: 0.45rem 0.35rem;
   font-family: var(--font);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
   background: transparent;
   border: none;
   cursor: pointer;
-  border-radius: 12px;
-  transition: background 0.15s ease, color 0.15s ease;
+  border-radius: 10px;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .capture-chip svg {
-  opacity: 0.85;
+  opacity: 0.55;
 }
 
 .capture-chip:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(12, 12, 12, 0.04);
+  color: var(--text);
+}
+
+.capture-chip:hover svg {
+  opacity: 0.82;
 }
 
 .capture-shutter {
@@ -429,25 +550,35 @@ html {
   background: transparent;
   display: grid;
   place-items: center;
-  filter: drop-shadow(0 6px 20px var(--capture-glow));
-  transition: transform 0.12s ease;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.1));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .capture-shutter:active {
-  transform: scale(0.94);
+  transform: scale(0.9);
 }
 
 .capture-shutter-inner {
   width: 66px;
   height: 66px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.95);
-  background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.35), rgba(255, 200, 120, 0.55));
-  box-shadow: 0 0 28px rgba(255, 195, 120, 0.35);
+  border: 2px solid rgba(12, 12, 12, 0.35);
+  background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.85), rgba(247, 244, 238, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.75) inset,
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.capture-shutter:active .capture-shutter-inner {
+  transform: scale(0.93);
 }
 
 .capture-shutter:hover .capture-shutter-inner {
-  background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.42), rgba(255, 210, 140, 0.65));
+  border-color: rgba(12, 12, 12, 0.45);
 }
 
 .capture-session-msg {
@@ -455,7 +586,7 @@ html {
   min-height: 1.25em;
   text-align: center;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--muted-2);
 }
 
 @media (max-width: 400px) {
@@ -818,7 +949,10 @@ body {
   color: var(--muted);
   cursor: pointer;
   margin-bottom: -1px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.14s ease;
 }
 
 .tab-btn:hover {
@@ -1857,6 +1991,7 @@ body {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
+  transition: opacity 0.14s ease, transform 0.14s ease, color 0.14s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1865,7 +2000,8 @@ body {
 }
 
 .mobile-dock-btn:active {
-  opacity: 0.7;
+  opacity: 0.72;
+  transform: translateY(0.45px) scale(0.98);
 }
 
 .mobile-dock-btn.is-active {
