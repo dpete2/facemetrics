@@ -19,19 +19,6 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <svg class="defs-sprite" width="0" height="0" aria-hidden="true" focusable="false">
-    <defs>
-      <filter id="aura-displace" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
-        <feTurbulence type="turbulence" baseFrequency="0.124" numOctaves="3" stitchTiles="stitch" seed="48" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-    </defs>
-  </svg>
-  <div id="click-flash-root" class="click-flash-root" aria-hidden="true"></div>
-  <div id="cursor-aura" class="cursor-aura" aria-hidden="true">
-    <span class="cursor-aura__bend"></span>
-    <span class="cursor-aura__pixel"></span>
-  </div>
   <script>
     try {
       if (sessionStorage.getItem("mogg_entrance") === "1") document.documentElement.classList.add("entrance-complete");
@@ -105,6 +92,12 @@
       <h2 class="scan-title">SCANNING SUBJECT</h2>
       <p class="scan-sub" id="scan-sub">Initializing mesh extraction…</p>
 
+      <ol id="scan-protocol-track" class="scan-protocol-track" aria-label="Analysis steps">
+        <li data-scan-step="1">Prep &amp; locate</li>
+        <li data-scan-step="2">Measure proportions</li>
+        <li data-scan-step="3">Build dossier</li>
+      </ol>
+
       <div class="scan-meter" aria-hidden="true">
         <div class="scan-meter-fill" id="scan-fill"></div>
       </div>
@@ -151,17 +144,13 @@
   <main class="shell shell--tabs">
     <div id="tab-panel-overview" class="tab-panel is-active" role="tabpanel" aria-labelledby="tab-btn-overview">
       <section class="overview-minimal">
-        <div class="cta-stack cta-stack--overview">
-          <button type="button" class="btn btn-ghost-main" id="btn-begin" aria-label="Begin analysis">
+        <article class="overview-card panel frame-minor">
+          <h2 class="overview-heading">Do You Mog?</h2>
+          <button type="button" class="btn btn-primary-cta overview-cta" id="btn-begin" aria-label="Begin analysis">
             Begin analysis
           </button>
-
-          <div class="cta-row cta-row--links">
-            <button type="button" class="link-tab" id="btn-view-dossier" data-go-tab="results">Results</button>
-            <button type="button" class="link-tab" id="btn-corpus-heatmap" data-go-tab="charts">Charts</button>
-            <button type="button" class="link-tab" id="btn-appeal" data-go-tab="appeal">Appeal</button>
-          </div>
-        </div>
+          <p class="overview-micro">Prefer file drop? Use the <span class="overview-mono-label">Scan</span> tab after.</p>
+        </article>
       </section>
     </div>
 
@@ -217,6 +206,7 @@
     </div>
 
     <div id="tab-panel-results" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-results" hidden>
+    <p id="results-takeaway" class="results-takeaway" role="status" aria-live="polite" hidden></p>
     <section class="panel panel-score frame-minor panel-soft" id="harmony-panel" aria-live="polite">
       <h2 class="panel-label">Harmony</h2>
       <div class="harmony">
@@ -330,7 +320,9 @@
     <button type="button" class="mobile-dock-btn" id="dock-appeal" data-tab="appeal" aria-label="Appeal">Appeal</button>
   </nav>
 
-  <footer class="footer footer--minimal"><p>moggednyc</p></footer>
+  <footer class="footer footer--minimal">
+    <p class="footer-privacy">Uploads Do Not Leave Your Device</p>
+  </footer>
 
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>

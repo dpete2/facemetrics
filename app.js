@@ -14,10 +14,6 @@
     cameraCaptureInput: $("#camera-capture-input"),
     btnBegin: $("#btn-begin"),
     btnUploadPhoto: $("#btn-upload-photo"),
-    btnViewDossier: $("#btn-view-dossier"),
-    btnCorpusHeatmap: $("#btn-corpus-heatmap"),
-    sectionDossier: $("#section-dossier"),
-    sectionHeatmap: $("#section-heatmap"),
     btnTakePhoto: $("#btn-take-photo"),
     btnLiveFeed: $("#btn-live-feed"),
     btnClear: $("#btn-clear"),
@@ -47,8 +43,6 @@
     // AI assistant removed
     harmonyPanel: $("#harmony-panel"),
     mobileDock: $("#mobile-dock"),
-    btnAppeal: $("#btn-appeal"),
-    sectionAppeal: $("#section-appeal"),
     appealScore: $("#appeal-score"),
     appealTier: $("#appeal-tier"),
     appealConfidence: $("#appeal-confidence"),
@@ -63,9 +57,27 @@
     scanFill: $("#scan-fill"),
     scanPct: $("#scan-pct"),
     scanLeft: $("#scan-left"),
+    scanProtocolTrack: $("#scan-protocol-track"),
   };
 
   const TAB_ORDER = ["overview", "scan", "results", "charts", "appeal"];
+
+  const METRIC_DEEP_NOTE = {
+    thirds:
+      "Thirds drift if the scalp hairline isn’t visible, if you tilt your chin, or crop the forehead. Portrait photographers fudge this all the time—treat bands as frontal-view guidance, not fate.",
+    golden:
+      "This ratio is hypersensitive to how wide your face reads in-frame (hair, cheeks, beard shadow) and focal length / selfie warp. Prefer arms-length mirrors or low distortion if you revisit it.",
+    eyes:
+      "Interocular spacing changes with eyebrow tilt, sleepy lids, squinting, or heavy shadowing. Landmark dots can wander a pixel or two—that’s normal for TinyFaceDetector + 68 points.",
+    "nose-lip":
+      "Lip posture (rest vs slight smile vs tension) reshapes lip-to-chin length. Beard on the chin can bury the underlying menton; clean-shaven or consistent grooming gives cleaner reads.",
+    jaw:
+      "The algorithm infers chin and masseter-ish corners from frontal landmarks only—rotation or head roll skews angles. Profiles and 3‑D anatomy aren’t modeled here.",
+    symmetry:
+      "Lighting from one side, camera skew, glasses, sunglasses, uneven expression, even hair occlusion will tank symmetry before bone does. Confidence notes below call out suspicious cases.",
+    "cheek-jaw":
+      "Cheek fullness, buccal light, beard fade, or smiling all change apparent mid-face width. Compare runs with the same expression for apples-to-apples tracking.",
+  };
 
   function resizeChartsIfNeeded() {
     requestAnimationFrame(() => {
@@ -113,7 +125,6 @@
   let radarChartInstance = null;
   let lastMetrics = null;
   // AI assistant removed
-  let scanTimer = null;
   let scanPct = 0;
   let captureFacingUser = true;
 
@@ -265,39 +276,77 @@
     };
   }
 
-  function showScan(stageLabel, subText) {
-    if (!els.scanScreen) return;
-    els.scanScreen.classList.remove("hidden");
-    scanPct = 0;
-    if (els.scanLeft) els.scanLeft.textContent = stageLabel || "SCANNING";
-    if (els.scanSub) els.scanSub.textContent = subText || "Initializing…";
-    if (els.scanPct) els.scanPct.textContent = "0";
-    if (els.scanFill) els.scanFill.style.width = "0%";
-
-    if (scanTimer) window.clearInterval(scanTimer);
-    scanTimer = window.setInterval(() => {
-      scanPct = Math.min(96, scanPct + (scanPct < 60 ? 4 : 2));
-      if (els.scanPct) els.scanPct.textContent = String(scanPct);
-      if (els.scanFill) els.scanFill.style.width = `${scanPct}%`;
-    }, 120);
+  function resetScanProtocol() {
+    if (!els.scanProtocolTrack) return;
+    const items = els.scanProtocolTrack.querySelectorAll("li");
+    items.forEach((li, i) => {
+      li.classList.remove("scan-protocol-done", "scan-protocol-active");
+      if (i === 0) li.classList.add("scan-protocol-active");
+    });
   }
 
-  function setScanStage(stageLabel, subText) {
-    if (els.scanLeft && stageLabel) els.scanLeft.textContent = stageLabel;
-    if (els.scanSub && subText) els.scanSub.textContent = subText;
+  function setScanPhase(phaseIdx) {
+    if (!els.scanProtocolTrack || phaseIdx === undefined) return;
+    const items = els.scanProtocolTrack.querySelectorAll("li");
+    items.forEach((li, i) => {
+      li.classList.toggle("scan-protocol-done", i < phaseIdx);
+      li.classList.toggle("scan-protocol-active", i === phaseIdx);
+    });
+  }
+
+  function applyScanMoment(label, detail, pct, phaseIdx) {
+    if (!els.scanScreen) return;
+    els.scanScreen.classList.remove("hidden");
+    if (els.scanLeft && label != null) els.scanLeft.textContent = label;
+    if (detail != null && els.scanSub) els.scanSub.textContent = detail;
+    if (typeof pct === "number") {
+      scanPct = Math.max(0, Math.min(100, pct));
+      if (els.scanPct) els.scanPct.textContent = String(Math.round(scanPct));
+      if (els.scanFill) els.scanFill.style.width = `${scanPct}%`;
+    }
+    if (typeof phaseIdx === "number") setScanPhase(phaseIdx);
+  }
+
+  /** Begins overlay: optional reset clears step list back to phase 0. */
+  function showScan(stageLabel, subText, phaseIdx = 0, pct = 12, resetProtocol = true) {
+    scanPct = 0;
+    if (els.scanPct) els.scanPct.textContent = "0";
+    if (els.scanFill) els.scanFill.style.width = "0%";
+    if (resetProtocol) resetScanProtocol();
+    applyScanMoment(stageLabel, subText, pct, phaseIdx);
   }
 
   function hideScan(success = true) {
-    if (scanTimer) window.clearInterval(scanTimer);
-    scanTimer = null;
     if (!els.scanScreen) return;
     if (success) {
       if (els.scanPct) els.scanPct.textContent = "100";
       if (els.scanFill) els.scanFill.style.width = "100%";
+      if (els.scanProtocolTrack) {
+        els.scanProtocolTrack.querySelectorAll("li").forEach((li) => {
+          li.classList.remove("scan-protocol-active");
+          li.classList.add("scan-protocol-done");
+        });
+      }
       setTimeout(() => els.scanScreen.classList.add("hidden"), 220);
+    } else els.scanScreen.classList.add("hidden");
+  }
+
+  function renderResultsTakeaway(metrics) {
+    const el = document.getElementById("results-takeaway");
+    if (!el || !metrics) return;
+    const tier = tierFromHarmonyScore(metrics.harmony);
+    const weakest = [...metrics.rows].sort((a, b) => a.match - b.match)[0];
+    const parts = [];
+    if (tier) {
+      parts.push(`Harmony reads as ${tier.title} (${tier.acronym}). ${tier.note}`);
     } else {
-      els.scanScreen.classList.add("hidden");
+      parts.push(`Harmony sits at ${Math.round(metrics.harmony)}/100 on this heuristic.`);
     }
+    if (weakest && typeof weakest.match === "number") {
+      parts.push(`Tightest margin is ${weakest.title.toLowerCase()} (${Math.round(weakest.match)}%). Expand any metric to see what skews these numbers—pose matters a lot.`);
+    }
+    el.textContent = parts.join(" ");
+    el.hidden = false;
   }
 
   const RING_C = 2 * Math.PI * 52;
@@ -880,6 +929,10 @@
       const card = document.createElement("article");
       card.className = "metric-card";
       card.style.animationDelay = `${idx * 0.05}s`;
+      const deeper = METRIC_DEEP_NOTE[row.id] || "";
+      const moreBlock = deeper
+        ? `<details class="metric-more"><summary>Learn more</summary><p class="metric-more-body">${deeper}</p></details>`
+        : "";
       card.innerHTML = `
         <h3>${row.title}</h3>
         <div class="metric-values">
@@ -891,6 +944,7 @@
         </div>
         <span class="match-pill">Δ CONFORMANCE ${Math.round(row.match)}%</span>
         <p class="metric-desc">${row.explain}</p>
+        ${moreBlock}
       `;
       els.metricsGrid.appendChild(card);
       requestAnimationFrame(() => {
@@ -1003,17 +1057,18 @@
 
   async function ensureModels() {
     if (modelsLoaded) return;
-    showScan("MODEL LOAD", "Loading face models (one-time)…");
+    applyScanMoment("TOOLS", "Downloading detection + landmark nets once (few MB).", 16, 0);
     setStatus("Loading models…");
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
     modelsLoaded = true;
+    applyScanMoment("TOOLS", "Models cached — ready to align face.", 44, 0);
     setStatus("Ready.");
   }
 
   async function analyzeImage(img) {
     await ensureModels();
-    showScan("MESH EXTRACT", "Locating face + landmarks…");
+    applyScanMoment("LOCATE", "TinyFace detector + 68-point mesh alignment.", 58, 0);
     setStatus("Analyzing face…");
 
     const det = await faceapi
@@ -1026,12 +1081,14 @@
       return;
     }
 
-    setScanStage("RATIO COMPUTE", "Computing classical proportions…");
+    applyScanMoment("MEASURE", "Classical frontal proportions vs reference baselines.", 66, 1);
     const positions = det.landmarks.positions;
     const metrics = computeMetrics(positions);
-    setScanStage("APPEAL MODEL", "Estimating appeal proxy + confidence…");
+    applyScanMoment("VERIFY", "Pose / blur / framing heuristics + composite appeal estimate.", 78, 1);
     const conf = computeConfidence(positions, det.detection.box, img);
     metrics.appeal = computeAppeal(metrics, conf);
+
+    applyScanMoment("ASSEMBLE", "Drawing overlay · radar · dossier tabs.", 90, 2);
 
     els.placeholder.classList.add("hidden");
     els.resultWrap.classList.remove("hidden");
@@ -1050,6 +1107,7 @@
     renderMetricCards(metrics);
     updateRadar(metrics);
     setHarmonyScore(metrics.harmony);
+    renderResultsTakeaway(metrics);
     lastMetrics = metrics;
     // AI assistant removed
     renderAppeal(metrics);
@@ -1060,7 +1118,7 @@
 
   function loadImageFromFile(file) {
     setActiveTab("scan");
-    showScan("INGEST", "Buffering image…");
+    showScan("PREP", "Decoding file and handing pixels to the pipeline…", 0, 18, true);
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
@@ -1365,6 +1423,11 @@
     if (els.appealTips) els.appealTips.innerHTML = "";
     if (els.appealPros) els.appealPros.innerHTML = "";
     if (els.appealCons) els.appealCons.innerHTML = "";
+    const takeaway = document.getElementById("results-takeaway");
+    if (takeaway) {
+      takeaway.textContent = "";
+      takeaway.hidden = true;
+    }
     setStatus("Cleared.");
     hideScan(false);
   });
@@ -1402,83 +1465,6 @@
     }
     hideScan(false);
   });
-
-  function initCursorAura() {
-    const el = document.getElementById("cursor-aura");
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    let px = innerWidth / 2;
-    let py = innerHeight / 2;
-    let rafId = 0;
-    let on = false;
-    function flush() {
-      rafId = 0;
-      el.style.transform = `translate(${px}px, ${py}px)`;
-    }
-    window.addEventListener(
-      "pointermove",
-      (e) => {
-        if (e.pointerType !== "mouse") return;
-        px = e.clientX;
-        py = e.clientY;
-        if (!on) {
-          on = true;
-          el.classList.add("is-active");
-        }
-        if (!rafId) rafId = requestAnimationFrame(flush);
-      },
-      { passive: true }
-    );
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState !== "visible") {
-        el.classList.remove("is-active");
-      }
-    });
-    flush();
-  }
-
-  let swipeNextLeft = false;
-
-  function flashClickAt(cx, cy) {
-    const root = document.getElementById("click-flash-root");
-    if (!root) return;
-    const ribbon = document.createElement("span");
-    swipeNextLeft = !swipeNextLeft;
-    ribbon.className = swipeNextLeft ? "click-wave click-wave--left" : "click-wave click-wave--down";
-    ribbon.style.setProperty("--ribbon-x", `${cx}px`);
-    ribbon.style.setProperty("--ribbon-y", `${cy}px`);
-    root.appendChild(ribbon);
-    ribbon.addEventListener(
-      "animationend",
-      () => {
-        ribbon.remove();
-      },
-      { once: true }
-    );
-  }
-
-  function initClickFlashes() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    swipeNextLeft = false;
-    document.addEventListener(
-      "click",
-      (e) => {
-        const target = e.target;
-        const tag =
-          target && target.closest
-            ? target.closest("button:not(:disabled), .link-tab, .dropzone:not(:disabled)")
-            : null;
-        if (!tag) return;
-        if (tag.id === "file-input") return;
-        flashClickAt(e.clientX, e.clientY);
-      },
-      false
-    );
-  }
-
-  initCursorAura();
-  initClickFlashes();
 
   setStatus("");
 })();
