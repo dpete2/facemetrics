@@ -30,28 +30,25 @@
     class="entrance-screen"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="entrance-face-label"
+    aria-labelledby="entrance-brand-label"
     aria-hidden="false"
   >
     <div class="entrance-site-bg" aria-hidden="true"></div>
-    <div class="entrance-frame">
+    <div class="entrance-layout">
       <header class="entrance-bar">
-        <span class="entrance-brand" id="entrance-face-label">moggednyc</span>
+        <span class="entrance-brand" id="entrance-brand-label">moggednyc</span>
         <button type="button" class="entrance-text-btn" id="entrance-menu" aria-label="Enter site">Menu</button>
       </header>
 
-      <div class="entrance-face-wrap">
-        <img
-          class="entrance-face"
-          src="./assets/entrance-face.png"
-          width="620"
-          height="620"
-          alt=""
-          decoding="async"
-        />
+      <div class="entrance-mark-wrap" aria-hidden="true">
+        <svg class="entrance-mark entrance-mark--pill" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="48" width="104" height="24" rx="12" ry="12" fill="#000000" />
+        </svg>
       </div>
 
-      <button type="button" class="entrance-continue" id="btn-entrance-continue">continue</button>
+      <footer class="entrance-foot">
+        <button type="button" class="entrance-continue" id="btn-entrance-continue">continue</button>
+      </footer>
     </div>
   </div>
 

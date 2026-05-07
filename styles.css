@@ -33,16 +33,15 @@ html:not(.entrance-complete) body {
   overflow: hidden;
 }
 
-/* ─── Entrance (matches site BG + wireframe) ─── */
+/* ─── Entrance (full-bleed, typographic corner nav + center mark) ─── */
 .entrance-screen {
   position: fixed;
   inset: 0;
   z-index: 400;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
 }
 
 .entrance-site-bg {
@@ -59,19 +58,23 @@ html:not(.entrance-complete) body {
   opacity: 0.95;
 }
 
-.entrance-frame {
+.entrance-layout {
   position: relative;
   z-index: 1;
-  width: min(560px, 100%);
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(1.1rem + env(safe-area-inset-top, 0px)) calc(1.15rem + env(safe-area-inset-right, 0px))
+    calc(1rem + env(safe-area-inset-bottom, 0px)) calc(1.15rem + env(safe-area-inset-left, 0px));
 }
 
 .entrance-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .entrance-brand {
@@ -100,29 +103,37 @@ html:not(.entrance-complete) body {
   opacity: 0.55;
 }
 
-.entrance-face-wrap {
+.entrance-mark-wrap {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: min(52vh, 420px);
-  padding: 0.5rem 0 1rem;
+  padding: 1rem 0;
 }
 
-.entrance-face {
-  width: min(92%, 440px);
+.entrance-mark {
+  width: min(56vw, 228px);
   height: auto;
-  max-height: min(54vh, 480px);
-  object-fit: contain;
-  mix-blend-mode: multiply;
-  opacity: 0.96;
-  filter: contrast(1.05);
+  aspect-ratio: 1 / 1;
+  color: var(--text);
+  opacity: 0.92;
+}
+
+.entrance-mark--pill {
+  opacity: 1;
+}
+
+.entrance-foot {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-top: 0.5rem;
 }
 
 .entrance-continue {
-  display: block;
-  margin: auto auto 0;
-  padding-top: 1rem;
+  padding: 0.35rem;
+  margin: -0.35rem;
   font-family: var(--font);
   font-size: 1rem;
   font-weight: 500;
